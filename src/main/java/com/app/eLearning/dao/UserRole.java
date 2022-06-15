@@ -18,4 +18,8 @@ public class UserRole {
 
     @Column(name = "role_id")
     private int roleId;
+
+    public UserRole(int roleId) {
+        this.roleId = roleId;
+    }
 }

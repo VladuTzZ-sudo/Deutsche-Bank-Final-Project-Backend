@@ -50,7 +50,7 @@ CREATE TABLE `user_role` (
   `id` int NOT NULL AUTO_INCREMENT,
   `role_id` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -59,7 +59,7 @@ CREATE TABLE `user_role` (
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
-INSERT INTO `user_role` VALUES (1,1),(2,2);
+INSERT INTO `user_role` VALUES (1,1),(2,2),(3,1),(4,1);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -72,16 +72,16 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `active` bit(1) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `surname` varchar(255) DEFAULT NULL,
-  `role_id` int DEFAULT NULL,
-  `active` bit(1) DEFAULT NULL,
+  `user_role_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKqjp6iwe2anthe5yx88fl0coan` (`role_id`),
-  CONSTRAINT `FKqjp6iwe2anthe5yx88fl0coan` FOREIGN KEY (`role_id`) REFERENCES `user_role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `FK7x3uo1krtxr8r60py9rd2ys5p` (`user_role_id`),
+  CONSTRAINT `FK7x3uo1krtxr8r60py9rd2ys5p` FOREIGN KEY (`user_role_id`) REFERENCES `user_role` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +90,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'jack@gmail.com','Jack','12345','black',1,_binary ''),(2,'mike@gmail.com','Mike','54321','Rock',2,NULL);
+INSERT INTO `users` VALUES (1,NULL,'jack@gmail.com','Jack','12345','Black',1),(2,_binary '','mike@gmail.com','Mike','54321','Tison',2),(3,_binary '','jim@gmail.com','Jim','11111','Carrey',3),(4,NULL,'mark@gmail.com0000000000000000','Mark','11111','Zucky',4);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -103,4 +103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-15 13:43:45
+-- Dump completed on 2022-06-15 15:15:59

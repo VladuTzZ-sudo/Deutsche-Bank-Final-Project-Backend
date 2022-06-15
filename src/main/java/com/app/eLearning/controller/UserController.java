@@ -2,6 +2,7 @@ package com.app.eLearning.controller;
 
 import com.app.eLearning.dao.User;
 import com.app.eLearning.dto.LoginDTO;
+import com.app.eLearning.dto.RegisterDTO;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.service.UserService;
 import io.fusionauth.jwt.Signer;
@@ -51,5 +52,15 @@ public class UserController {
         System.out.println(encodedJWT);
 
         return ResponseEntity.ok().headers(headers).body("Successful login!");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) throws EmailTooLongException, PasswordTooShortException, EmailAlreadyRegisteredException, PasswordTooLongException, EmailTooShortException {
+
+        if (userService.registerUser(registerDTO) == true) {
+            return new ResponseEntity("Successfully registered!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity("Cannot register account", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

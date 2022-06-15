@@ -24,15 +24,14 @@ public class User {
     private Boolean active;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_role_id", referencedColumnName = "id")
     private UserRole userRole;
 
-    public User(String name, String surname, String email, String password, Boolean active) {
+    public User(String name, String surname, String email, String password) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.password = password;
-        this.active = active;
     }
 }
 

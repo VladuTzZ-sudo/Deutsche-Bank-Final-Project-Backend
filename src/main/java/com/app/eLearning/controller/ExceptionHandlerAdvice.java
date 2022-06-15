@@ -40,5 +40,10 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity("This account has not been activated.", HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ResponseEntity handleEmailAlreadyRegisteredException() {
+        return new ResponseEntity("This email is already in use", HttpStatus.BAD_REQUEST);
+    }
+
 
 }
