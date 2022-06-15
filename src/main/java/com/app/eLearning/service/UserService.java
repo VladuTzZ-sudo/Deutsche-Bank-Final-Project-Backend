@@ -49,7 +49,7 @@ public class UserService {
         if (loginDTO.getEmail().length() < 6) {
             throw new EmailTooShortException();
         }
-        if (loginDTO.getEmail().length() > 20) {
+        if (loginDTO.getEmail().length() > 40) {
             throw new EmailTooLongException();
         }
         if (loginDTO.getPassword().length() < 5) {
