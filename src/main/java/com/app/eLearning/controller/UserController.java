@@ -59,6 +59,7 @@ public class UserController {
 
         if (userService.registerUser(registerDTO) == true) {
             return new ResponseEntity("Successfully registered!", HttpStatus.OK);
+
         } else {
             return new ResponseEntity("Cannot register account", HttpStatus.INTERNAL_SERVER_ERROR);
         }

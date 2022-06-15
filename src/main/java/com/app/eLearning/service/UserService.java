@@ -7,8 +7,11 @@ import com.app.eLearning.dto.RegisterDTO;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.repository.RoleRepository;
 import com.app.eLearning.repository.UserRepository;
+import com.app.eLearning.utils.BCryptUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,10 +30,14 @@ public class UserService {
         User foundUser;
 
         try {
-            foundUser = userRepository.findByEmailAndPassword(loginDTO.getEmail(), loginDTO.getPassword()).get(0);
+            foundUser = userRepository.findByEmail(loginDTO.getEmail()).get(0);
+            BCryptUtils.checkEncryptedPassword(loginDTO.getPassword(), foundUser.getPassword());
         } catch (Exception e) {
             throw new UnmatchedLoginCredentials();
         }
+
+        if(foundUser == null)
+            throw new UnmatchedLoginCredentials();
 
         //check if user is active, if not throws exception
         if (foundUser.getActive() == null) {
@@ -52,7 +59,8 @@ public class UserService {
 
         validateRegisterDTO(registerDTO);
 
-        User newUser = new User(registerDTO.getName(), registerDTO.getSurname(), registerDTO.getEmail(), registerDTO.getPassword());
+        User newUser = new User(registerDTO.getName(), registerDTO.getSurname(), registerDTO.getEmail(),
+                BCryptUtils.hashPassword(registerDTO.getPassword()));
         newUser.setUserRole(new UserRole(roleRepository.findFirstByName(registerDTO.getRole()).getId()));
 
         try {
