@@ -2,6 +2,7 @@ package com.app.eLearning.controller;
 
 import com.app.eLearning.dao.User;
 import com.app.eLearning.dto.LoginDTO;
+import com.app.eLearning.dto.LoginResponseDTO;
 import com.app.eLearning.dto.RegisterDTO;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.service.UserService;
@@ -14,12 +15,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-
+@CrossOrigin
 @Controller
 public class UserController {
 
@@ -27,7 +30,8 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, UnmatchedLoginCredentials, UserInactiveException {
+    @ResponseBody
+    public LoginResponseDTO login(@RequestBody LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, UnmatchedLoginCredentials, UserInactiveException {
 
         Pair<User, String> foundUserAndRole = userService.loginUser(loginDTO);
         User foundUser = foundUserAndRole.getFirst();
@@ -49,9 +53,11 @@ public class UserController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + encodedJWT);
 
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(encodedJWT, foundUser.getName(), roleName);
+
         System.out.println(encodedJWT);
 
-        return ResponseEntity.ok().headers(headers).body("Successful login!");
+        return loginResponseDTO;
     }
 
     @PostMapping("/register")
