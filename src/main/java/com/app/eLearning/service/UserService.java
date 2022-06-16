@@ -70,8 +70,7 @@ public class UserService
 
 	public boolean registerUser(RegisterDTO registerDTO) throws EmailTooLongException,
 			PasswordTooShortException, EmailAlreadyRegisteredException,
-			PasswordTooLongException, EmailTooShortException, InvalidEmailFormatException
-	{
+			PasswordTooLongException, EmailTooShortException, InvalidEmailFormatException, NameTooLongException, SurnameTooShortException, NameTooShortException, SurnameTooLongException {
 
 		validateRegisterDTO(registerDTO);
 
@@ -99,8 +98,22 @@ public class UserService
 				.matches();
 	}
 
-	private void validateRegisterDTO(RegisterDTO registerDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, EmailAlreadyRegisteredException, InvalidEmailFormatException
-	{
+	private void validateRegisterDTO(RegisterDTO registerDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, EmailAlreadyRegisteredException, InvalidEmailFormatException, NameTooShortException, NameTooLongException, SurnameTooShortException, SurnameTooLongException {
+		if (registerDTO.getName().length() < 1){
+		throw new NameTooShortException();
+		}
+
+		if (registerDTO.getName().length() > 20){
+		throw new NameTooLongException();
+		}
+
+		if (registerDTO.getSurname().length() < 1){
+		throw new SurnameTooShortException();
+		}
+
+		if (registerDTO.getSurname().length() > 20){
+		throw new SurnameTooLongException();
+		}
 
 		String email = registerDTO.getEmail();
 		String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"

@@ -52,4 +52,24 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity("The given email format is not valid!", HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(NameTooShortException.class)
+    public ResponseEntity handleNameTooShortException(){
+        return new ResponseEntity("The name is too short!", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(NameTooLongException.class)
+    public ResponseEntity handleNameTooLongException(){
+        return new ResponseEntity("The name is too long!", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(SurnameTooShortException.class)
+    public ResponseEntity handleSurnameTooShortException(){
+        return new ResponseEntity("The surname is too short!", HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(SurnameTooLongException.class)
+    public ResponseEntity handleSurnameTooLongException(){
+        return new ResponseEntity("The surname is too long!", HttpStatus.FORBIDDEN);
+    }
+
 }

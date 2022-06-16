@@ -63,8 +63,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) throws EmailTooLongException,
             PasswordTooShortException, EmailAlreadyRegisteredException, PasswordTooLongException,
-            EmailTooShortException, InvalidEmailFormatException
-    {
+            EmailTooShortException, InvalidEmailFormatException, NameTooLongException, SurnameTooShortException, NameTooShortException, SurnameTooLongException {
 
         if (userService.registerUser(registerDTO) == true) {
             return new ResponseEntity("Successfully registered!", HttpStatus.OK);
