@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "courses")
+@Table(name = "sections")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +18,9 @@ public class Section
 	private int id;
 
 	private String title;
+
+	@OneToOne
+	private Quiz quiz;
 
 	public Section(String title)
 	{
