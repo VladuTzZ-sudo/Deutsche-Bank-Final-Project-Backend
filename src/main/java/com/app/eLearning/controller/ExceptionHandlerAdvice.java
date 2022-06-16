@@ -77,4 +77,8 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity("The received token is not valid!", HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NullDtoFieldException.class)
+    public ResponseEntity handleNullDtoFieldException(){
+        return new ResponseEntity("A DTO field was null!", HttpStatus.BAD_REQUEST);
+    }
 }

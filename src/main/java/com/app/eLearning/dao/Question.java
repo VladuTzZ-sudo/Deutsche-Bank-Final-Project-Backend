@@ -21,7 +21,7 @@ public class Question {
     private String contentQuestion;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "answer_id", referencedColumnName = "id")
+    @JoinColumn(name = "id_question", referencedColumnName = "id")
     private Set<Answer> answers;
 
     public Question(String contentQuestion, Set<Answer> answers) {

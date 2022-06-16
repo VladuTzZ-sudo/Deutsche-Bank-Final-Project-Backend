@@ -29,8 +29,7 @@ public class UserService
 
 	public Pair<User, String> loginUser(LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException,
 			PasswordTooShortException, PasswordTooLongException,
-			UnmatchedLoginCredentials, UserInactiveException
-	{
+			UnmatchedLoginCredentials, UserInactiveException, NullDtoFieldException {
 		validateLoginDTO(loginDTO);
 
 		User foundUser;
@@ -70,7 +69,7 @@ public class UserService
 
 	public boolean registerUser(RegisterDTO registerDTO) throws EmailTooLongException,
 			PasswordTooShortException, EmailAlreadyRegisteredException,
-			PasswordTooLongException, EmailTooShortException, InvalidEmailFormatException, NameTooLongException, SurnameTooShortException, NameTooShortException, SurnameTooLongException {
+			PasswordTooLongException, EmailTooShortException, InvalidEmailFormatException, NameTooLongException, SurnameTooShortException, NameTooShortException, SurnameTooLongException, NullDtoFieldException {
 
 		validateRegisterDTO(registerDTO);
 
@@ -98,7 +97,11 @@ public class UserService
 				.matches();
 	}
 
-	private void validateRegisterDTO(RegisterDTO registerDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, EmailAlreadyRegisteredException, InvalidEmailFormatException, NameTooShortException, NameTooLongException, SurnameTooShortException, SurnameTooLongException {
+	private void validateRegisterDTO(RegisterDTO registerDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, EmailAlreadyRegisteredException, InvalidEmailFormatException, NameTooShortException, NameTooLongException, SurnameTooShortException, SurnameTooLongException, NullDtoFieldException {
+		if (registerDTO.getName() == null || registerDTO.getSurname() == null || registerDTO.getEmail() == null || registerDTO.getPassword() == null || registerDTO.getRole() == null){
+			throw new NullDtoFieldException();
+		}
+
 		if (registerDTO.getName().length() < 1){
 		throw new NameTooShortException();
 		}
@@ -146,8 +149,11 @@ public class UserService
 		}
 	}
 
-	private void validateLoginDTO(LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException
-	{
+	private void validateLoginDTO(LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, NullDtoFieldException {
+		if (loginDTO.getEmail() == null || loginDTO.getPassword() == null){
+			throw new NullDtoFieldException();
+		}
+
 		if (loginDTO.getEmail().length() < 6)
 		{
 			throw new EmailTooShortException();

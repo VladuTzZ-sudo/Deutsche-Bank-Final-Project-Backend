@@ -18,7 +18,7 @@ public class Quiz {
     private int id;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "question_id", referencedColumnName = "id")
+    @JoinColumn(name = "id_quiz", referencedColumnName = "id")
     private Set<Question> questions;
 
     public Quiz(Set<Question> questions) {

@@ -29,7 +29,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseBody
-    public LoginResponseDTO login(@RequestBody LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, UnmatchedLoginCredentials, UserInactiveException {
+    public LoginResponseDTO login(@RequestBody LoginDTO loginDTO) throws EmailTooShortException, EmailTooLongException, PasswordTooShortException, PasswordTooLongException, UnmatchedLoginCredentials, UserInactiveException, NullDtoFieldException {
 
         Pair<User, String> foundUserAndRole = userService.loginUser(loginDTO);
         User foundUser = foundUserAndRole.getFirst();
@@ -61,7 +61,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) throws EmailTooLongException,
             PasswordTooShortException, EmailAlreadyRegisteredException, PasswordTooLongException,
-            EmailTooShortException, InvalidEmailFormatException, NameTooLongException, SurnameTooShortException, NameTooShortException, SurnameTooLongException {
+            EmailTooShortException, InvalidEmailFormatException, NameTooLongException, SurnameTooShortException, NameTooShortException, SurnameTooLongException, NullDtoFieldException {
 
         if (userService.registerUser(registerDTO) == true) {
             return new ResponseEntity("Successfully registered!", HttpStatus.OK);
