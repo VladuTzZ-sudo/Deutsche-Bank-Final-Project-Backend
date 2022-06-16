@@ -6,6 +6,7 @@ import com.app.eLearning.dto.LoginResponseDTO;
 import com.app.eLearning.dto.RegisterDTO;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.service.UserService;
+import com.app.eLearning.utils.LoginAuthorization;
 import io.fusionauth.jwt.Signer;
 import io.fusionauth.jwt.domain.JWT;
 import io.fusionauth.jwt.hmac.HMACSigner;
@@ -15,10 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 
@@ -72,4 +70,21 @@ public class UserController {
             return new ResponseEntity("Cannot register account", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/test")
+    public ResponseEntity<String> test(@RequestBody String token) throws WrongTokenException {
+
+        int a;
+        String b;
+
+       a = LoginAuthorization.validateAuthorization(token).getFirst();
+        b = LoginAuthorization.validateAuthorization(token).getSecond();
+
+        System.out.println(a);
+        System.out.println(b);
+
+        return null;
+    }
+
+
 }

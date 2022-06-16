@@ -72,4 +72,9 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity("The surname is too long!", HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(WrongTokenException.class)
+    public ResponseEntity handleWrongTokenException(){
+        return new ResponseEntity("The received token is not valid!", HttpStatus.BAD_REQUEST);
+    }
+
 }
