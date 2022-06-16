@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -26,6 +27,9 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_role_id", referencedColumnName = "id")
     private UserRole userRole;
+
+    @ManyToMany
+    List<Course> userCourses;
 
     public User(String name, String surname, String email, String password) {
         this.name = name;
