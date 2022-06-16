@@ -19,6 +19,9 @@ public class Section
 
 	private String title;
 
+	@OneToOne
+	private Quiz quiz;
+
 	public Section(String title)
 	{
 		this.title = title;

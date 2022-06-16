@@ -28,7 +28,7 @@ public class User {
     @JoinColumn(name = "user_role_id", referencedColumnName = "id")
     private UserRole userRole;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     List<Course> userCourses;
 
     public User(String name, String surname, String email, String password) {

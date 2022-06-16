@@ -19,8 +19,9 @@ public class Course
 	private int id;
 
 	private String name;
+	private String teacherName;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	List<Section> courseSections;
 
 	public Course(String name)
