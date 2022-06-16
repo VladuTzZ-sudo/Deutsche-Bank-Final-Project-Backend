@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class CreateCourseDTO
 {
 	private String token;
-	private String courseName;
+	private String name;
 	private String teacherName;
 }

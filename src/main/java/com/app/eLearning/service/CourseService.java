@@ -46,7 +46,7 @@ public class CourseService
 	{
 		// crearea unui nou curs
 		Course course = new Course();
-		course.setName(createCourseDTO.getCourseName());
+		course.setName(createCourseDTO.getName());
 		course.setTeacherName(createCourseDTO.getTeacherName());
 
 		User teacher = userRepository.findById(authPair.getFirst()).get();
