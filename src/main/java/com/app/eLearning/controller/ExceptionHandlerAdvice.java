@@ -47,4 +47,9 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity("This email is already in use", HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidEmailFormatException.class)
+    public ResponseEntity handleInvalidEmailException(){
+        return new ResponseEntity("The given email format is not valid!", HttpStatus.FORBIDDEN);
+    }
+
 }
