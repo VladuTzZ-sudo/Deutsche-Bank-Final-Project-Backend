@@ -18,7 +18,7 @@ public class QuizService {
     @Autowired
     SectionRepository sectionRepository;
 
-    public Quiz getQuizForSpecificSectionId(int sectionId) throws SectionNotFoundException, QuizNotFoundException {
+    public Quiz getQuizForSpecificSectionId(int sectionId, String role) throws SectionNotFoundException, QuizNotFoundException {
 
         Section foundSection = null;
 
@@ -29,15 +29,28 @@ public class QuizService {
             throw new SectionNotFoundException();
         }
 
-        if (foundSection == null){
+        if (foundSection == null) {
             throw new SectionNotFoundException();
         }
 
-        if (foundSection != null && foundSection.getQuiz() != null) {
-            return foundSection.getQuiz();
+        if (role.equals("teacher")) {
+            if (foundSection.getQuiz() != null) {
+                return foundSection.getQuiz();
+            } else {
+                throw new QuizNotFoundException();
+            }
         } else {
-            throw new QuizNotFoundException();
+            if (foundSection.getQuiz() != null) {
+                if (foundSection.getQuiz().getIsVisible() == true) {
+                    return foundSection.getQuiz();
+                } else {
+                    throw new QuizNotFoundException();
+                }
+            } else {
+                throw new QuizNotFoundException();
+            }
         }
+
 
     }
 

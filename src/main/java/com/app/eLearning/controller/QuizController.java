@@ -41,7 +41,7 @@ public class QuizController {
         }
 
         if (receivedSectionDTO.getSectionID() > 0) {
-            return new ResponseEntity(quizService.getQuizForSpecificSectionId(receivedSectionDTO.getSectionID()), HttpStatus.OK);
+            return new ResponseEntity(quizService.getQuizForSpecificSectionId(receivedSectionDTO.getSectionID(), loginAuth.getSecond()), HttpStatus.OK);
         } else {
             return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
         }

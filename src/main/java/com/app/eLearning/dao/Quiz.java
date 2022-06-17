@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -20,11 +21,24 @@ public class Quiz {
     @Column(name = "quiz_name")
     private String quizName;
 
+    @Column(name = "is_visible")
+    private Boolean isVisible = false;
+
+    private Date deadline;
+
+    private int duration;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_quiz", referencedColumnName = "id")
     private Set<Question> questions;
 
     public Quiz(Set<Question> questions) {
+        this.questions = questions;
+    }
+
+    public Quiz(String quizName, boolean isVisible, Set<Question> questions) {
+        this.quizName = quizName;
+        this.isVisible = isVisible;
         this.questions = questions;
     }
 }
