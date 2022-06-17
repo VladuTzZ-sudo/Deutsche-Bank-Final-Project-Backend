@@ -102,7 +102,7 @@ public class UserService
 			throw new NullDtoFieldException();
 		}
 
-		if (registerDTO.getName().length() < 1){
+		if (registerDTO.getName().length() < 3){
 		throw new NameTooShortException();
 		}
 
@@ -110,7 +110,7 @@ public class UserService
 		throw new NameTooLongException();
 		}
 
-		if (registerDTO.getSurname().length() < 1){
+		if (registerDTO.getSurname().length() < 3){
 		throw new SurnameTooShortException();
 		}
 
