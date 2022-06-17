@@ -90,6 +90,19 @@ public class UserService
 
 	}
 
+	public boolean checkIfUserExists(int userId){
+		try {
+			if (userRepository.findById(userId).isPresent()){
+                return true;
+            }else {
+                return false;
+            }
+		}catch (Exception e){
+			e.printStackTrace();
+            return false;
+		}
+	}
+
 	public boolean patternMatches(String emailAddress, String regexPattern)
 	{
 		return Pattern.compile(regexPattern)

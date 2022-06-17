@@ -17,6 +17,9 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "quiz_name")
+    private String quizName;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_quiz", referencedColumnName = "id")
     private Set<Question> questions;

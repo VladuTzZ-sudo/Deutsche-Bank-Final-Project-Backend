@@ -81,4 +81,19 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity handleNullDtoFieldException(){
         return new ResponseEntity("A DTO field was null!", HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(SectionNotFoundException.class)
+    public ResponseEntity handleSectionNotFoundException(){
+        return new ResponseEntity("Section not found!", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(QuizNotFoundException.class)
+    public ResponseEntity handleQuizNotFoundException(){
+        return new ResponseEntity("Quiz not found!", HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(SectionIdNotFound.class)
+    public ResponseEntity handleSectionIdNotFound(){
+        return new ResponseEntity("Section ID not found!", HttpStatus.NOT_FOUND);
+    }
 }
