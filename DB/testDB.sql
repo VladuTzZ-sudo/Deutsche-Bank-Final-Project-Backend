@@ -137,6 +137,9 @@ DROP TABLE IF EXISTS `quizzes`;
 CREATE TABLE `quizzes` (
   `id` int NOT NULL AUTO_INCREMENT,
   `quiz_name` varchar(255) DEFAULT NULL,
+  `deadline` datetime(6) DEFAULT NULL,
+  `duration` int NOT NULL,
+  `is_visible` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -147,7 +150,7 @@ CREATE TABLE `quizzes` (
 
 LOCK TABLES `quizzes` WRITE;
 /*!40000 ALTER TABLE `quizzes` DISABLE KEYS */;
-INSERT INTO `quizzes` VALUES (1,'Essential Quiz 1'),(2,'Advanced Quiz');
+INSERT INTO `quizzes` VALUES (1,'Essential Quiz 1',NULL,0,_binary '\0'),(2,'Advanced Quiz',NULL,0,_binary '');
 /*!40000 ALTER TABLE `quizzes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,7 +219,7 @@ CREATE TABLE `user_role` (
   `id` int NOT NULL AUTO_INCREMENT,
   `role_id` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,7 +228,7 @@ CREATE TABLE `user_role` (
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
-INSERT INTO `user_role` VALUES (1,1),(2,1);
+INSERT INTO `user_role` VALUES (1,1),(2,1),(3,2);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,7 +250,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   KEY `FK7x3uo1krtxr8r60py9rd2ys5p` (`user_role_id`),
   CONSTRAINT `FK7x3uo1krtxr8r60py9rd2ys5p` FOREIGN KEY (`user_role_id`) REFERENCES `user_role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -256,7 +259,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,_binary '','mike@gmail.com','Mike','$2a$10$xi905qiaVEdQZmi6VRlI8OlW3qVcZHycQoyGAET3TqJAoHlJ8EC9S','Jackson',1),(2,NULL,'mi@gmail.com','Mi','$2a$10$6V1GmV3MPnP4/.eJzLcbsea6zT5KwnJnck04kCUlVL0YOCwZgbFJS','Jackson',2);
+INSERT INTO `users` VALUES (1,_binary '','mike@gmail.com','Mike','$2a$10$xi905qiaVEdQZmi6VRlI8OlW3qVcZHycQoyGAET3TqJAoHlJ8EC9S','Jackson',1),(2,NULL,'mi@gmail.com','Mi','$2a$10$6V1GmV3MPnP4/.eJzLcbsea6zT5KwnJnck04kCUlVL0YOCwZgbFJS','Jackson',2),(3,_binary '','jack@gmail.com','Jack','$2a$10$GOjIdAwpyH1C7eQfMjThBuqQqIAdzNLEVGafWwmg7h2ZJMuZjlhe.','Black',3);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -295,4 +298,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-17 13:20:09
+-- Dump completed on 2022-06-17 17:16:39
