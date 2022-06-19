@@ -22,6 +22,7 @@ public class Course
 	private String teacherName;
 
 	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "course_id", referencedColumnName = "id")
 	List<Section> courseSections;
 
 	public Course(String name)
