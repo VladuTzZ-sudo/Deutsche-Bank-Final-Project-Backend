@@ -20,8 +20,10 @@ public class Course
 
 	private String name;
 	private String teacherName;
+	private String description;
 
 	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "course_id", referencedColumnName = "id")
 	List<Section> courseSections;
 
 	public Course(String name)

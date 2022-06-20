@@ -11,5 +11,5 @@ public class CreateCourseDTO
 {
 	private String token;
 	private String name;
-	private String teacherName;
+	private String description;
 }
