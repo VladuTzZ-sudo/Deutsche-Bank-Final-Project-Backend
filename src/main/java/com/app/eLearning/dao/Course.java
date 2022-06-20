@@ -30,4 +30,8 @@ public class Course
 	{
 		this.name = name;
 	}
+
+	public void addSection(Section section){
+		this.courseSections.add(section);
+	}
 }
