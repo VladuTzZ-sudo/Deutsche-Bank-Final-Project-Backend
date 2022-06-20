@@ -21,6 +21,8 @@ public class Quiz {
     @Column(name = "quiz_name")
     private String quizName;
 
+    private String description;
+
     @Column(name = "is_visible")
     private Boolean isVisible = false;
 
@@ -40,5 +42,12 @@ public class Quiz {
         this.quizName = quizName;
         this.isVisible = isVisible;
         this.questions = questions;
+    }
+
+    public Quiz(String quizName, String description, Date deadline, int duration) {
+        this.quizName = quizName;
+        this.description = description;
+        this.deadline = deadline;
+        this.duration = duration;
     }
 }

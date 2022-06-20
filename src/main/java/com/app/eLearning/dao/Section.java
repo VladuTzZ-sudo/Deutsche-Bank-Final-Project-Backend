@@ -19,7 +19,7 @@ public class Section
 
 	private String title;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Quiz quiz;
 
 	public Section(String title)
