@@ -1,6 +1,7 @@
 package com.app.eLearning.controller;
 
 import com.app.eLearning.dao.Quiz;
+import com.app.eLearning.dto.NewQuizDTO;
 import com.app.eLearning.dto.ReceivedSectionDTO;
 import com.app.eLearning.exceptions.QuizNotFoundException;
 import com.app.eLearning.exceptions.SectionIdNotFound;
@@ -14,10 +15,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @Controller
@@ -34,7 +32,9 @@ public class QuizController {
 
         Pair<Integer, String> loginAuth = null;
 
+
         loginAuth = LoginAuthorization.validateAuthorization(receivedSectionDTO.getToken());
+
 
         if (!userService.checkIfUserExists(loginAuth.getFirst())) {
             return new ResponseEntity<>("Access forbidden! User account doesn't exist or is inactive.", HttpStatus.UNAUTHORIZED);
@@ -45,6 +45,22 @@ public class QuizController {
         } else {
             return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
         }
+
+    }
+
+    @PostMapping("/quiz")
+    public ResponseEntity<String> postQuiz(@RequestBody NewQuizDTO newQuizDTO) throws SectionNotFoundException, WrongTokenException {
+        Pair<Integer, String> loginAuth = null;
+
+        loginAuth = LoginAuthorization.validateAuthorization(newQuizDTO.getToken());
+
+
+        if (!loginAuth.getSecond().equals("teacher"))
+        {
+            return new ResponseEntity<>("You are not authorized to create a new quiz!", HttpStatus.UNAUTHORIZED);
+        }
+
+        return quizService.postQuiz(newQuizDTO);
 
     }
 
