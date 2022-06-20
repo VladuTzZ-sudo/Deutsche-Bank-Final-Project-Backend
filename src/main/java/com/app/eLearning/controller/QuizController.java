@@ -27,21 +27,21 @@ public class QuizController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/quiz")
-    public ResponseEntity<String> getQuiz(@RequestBody ReceivedSectionDTO receivedSectionDTO) throws QuizNotFoundException, SectionNotFoundException, SectionIdNotFound, WrongTokenException {
+    @GetMapping("/sections/{id}/quiz")
+    public ResponseEntity<String> getQuiz(@PathVariable(name = "id")int sectionId, @RequestBody String token) throws QuizNotFoundException, SectionNotFoundException, SectionIdNotFound, WrongTokenException {
 
         Pair<Integer, String> loginAuth = null;
 
 
-        loginAuth = LoginAuthorization.validateAuthorization(receivedSectionDTO.getToken());
+        loginAuth = LoginAuthorization.validateAuthorization(token);
 
 
         if (!userService.checkIfUserExists(loginAuth.getFirst())) {
             return new ResponseEntity<>("Access forbidden! User account doesn't exist or is inactive.", HttpStatus.UNAUTHORIZED);
         }
 
-        if (receivedSectionDTO.getSectionID() > 0) {
-            return new ResponseEntity(quizService.getQuizForSpecificSectionId(receivedSectionDTO.getSectionID(), loginAuth.getSecond()), HttpStatus.OK);
+        if (sectionId > 0) {
+            return new ResponseEntity(quizService.getQuizForSpecificSectionId(sectionId, loginAuth.getSecond()), HttpStatus.OK);
         } else {
             return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
         }
