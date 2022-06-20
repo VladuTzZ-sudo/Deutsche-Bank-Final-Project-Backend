@@ -41,10 +41,8 @@ public class UserController {
         Signer signer = HMACSigner.newSHA256Signer("my secret key to verify if token is legit ;)");
 
         JWT jwt = new JWT().setIssuer("www.goaldiggers.com")
-                .setIssuedAt(ZonedDateTime.now())
                 .setSubject(authorizationStr)
-                .setAudience(roleName)
-                .setExpiration(ZonedDateTime.now().plusMinutes(1440)); //expira dupa o zi
+                .setAudience(roleName);
 
         String encodedJWT = JWT.getEncoder().encode(jwt, signer);
 
