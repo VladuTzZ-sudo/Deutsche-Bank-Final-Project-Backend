@@ -4,6 +4,7 @@ import com.app.eLearning.dao.Course;
 import com.app.eLearning.dao.User;
 import com.app.eLearning.dto.CourseResponseDTO;
 import com.app.eLearning.dto.CreateCourseDTO;
+import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.repository.CourseRepository;
 import com.app.eLearning.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,40 @@ public class CourseService
 		{
 			Course currentCourse = userCourses.get(i);
 			courseDTOList.add(new CourseResponseDTO(currentCourse.getId(),
-					currentCourse.getName(), currentCourse.getTeacherName()));
+					currentCourse.getName(), currentCourse.getTeacherName(),
+					currentCourse.getDescription()));
 		}
 		return courseDTOList;
+	}
+
+	public CourseResponseDTO getCourse(Pair<Integer, String> authData, Integer id) throws CourseNotFoundException
+	{
+		if (authData == null)
+			return null;
+
+		// caut utilizatorul in baza de date si caut cursul cu id-ul id in lista lui de cursuri
+		User user = userRepository.findById(authData.getFirst()).get();
+		List<Course> userCourses = user.getUserCourses();
+		CourseResponseDTO response = null;
+		// iterez prin lista de cursuri ale user-ului si caut cursul cu id ul primit ca parametru
+		for (int i = 0; i < userCourses.size(); i++)
+		{
+			Course currentCourse = userCourses.get(i);
+			if (currentCourse.getId() == id)
+			{
+				response = new CourseResponseDTO();
+				response.setId(currentCourse.getId());
+				response.setName(currentCourse.getName());
+				response.setTeacherName(currentCourse.getTeacherName());
+				response.setDescription(currentCourse.getDescription());
+				break;
+			}
+		}
+		if (response == null)
+		{
+			throw new CourseNotFoundException();
+		}
+		return response;
 	}
 
 	public ResponseEntity<String> postCourse(Pair<Integer, String> authPair, CreateCourseDTO createCourseDTO)
@@ -47,9 +79,15 @@ public class CourseService
 		// crearea unui nou curs
 		Course course = new Course();
 		course.setName(createCourseDTO.getName());
-		course.setTeacherName(createCourseDTO.getTeacherName());
+		course.setDescription(createCourseDTO.getDescription());
 
+		// se cauta teacher-ul in baza de date si i se ia numele
 		User teacher = userRepository.findById(authPair.getFirst()).get();
+
+		// se seteaza numele teacher-ului
+		course.setTeacherName(teacher.getName());
+
+		// se adauga cursul teacher-ului
 		teacher.getUserCourses().add(course);
 
 		// adaugarea cursului la toti userii studenti
@@ -57,7 +95,7 @@ public class CourseService
 		for (int i = 0; i < users.size(); i++)
 		{
 			User currentUser = users.get(i);
-			if(currentUser.getUserRole().getRoleId() == 1)
+			if (currentUser.getUserRole().getRoleId() == 1)
 			{
 				currentUser.getUserCourses().add(course);
 				userRepository.save(currentUser);

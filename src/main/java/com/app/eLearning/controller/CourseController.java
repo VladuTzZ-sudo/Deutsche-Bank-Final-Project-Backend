@@ -2,6 +2,7 @@ package com.app.eLearning.controller;
 
 import com.app.eLearning.dto.CourseResponseDTO;
 import com.app.eLearning.dto.CreateCourseDTO;
+import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.WrongTokenException;
 import com.app.eLearning.service.CourseService;
 import com.app.eLearning.utils.LoginAuthorization;
@@ -34,7 +35,25 @@ public class CourseController
 		{
 			e.printStackTrace();
 		}
+
 		return courseService.getAllCourses(loginAuth);
+	}
+
+	@GetMapping("/courses/{id}")
+	@ResponseBody
+	public CourseResponseDTO getCourse(@PathVariable(required = true, name = "id") Integer id,
+	                                   @RequestBody String token) throws CourseNotFoundException
+	{
+		Pair<Integer, String> loginAuth = null;
+		try
+		{
+			loginAuth = LoginAuthorization.validateAuthorization(token);
+		}
+		catch (WrongTokenException e)
+		{
+			e.printStackTrace();
+		}
+		return courseService.getCourse(loginAuth, id);
 	}
 
 	// endpoint creare curs de catre profesor
@@ -51,6 +70,7 @@ public class CourseController
 			e.printStackTrace();
 		}
 
+		assert loginAuth != null;
 		if (!loginAuth.getSecond().equals("TEACHER"))
 		{
 			return new ResponseEntity<>("You are not authorized to create a new course!", HttpStatus.UNAUTHORIZED);
@@ -58,5 +78,6 @@ public class CourseController
 
 		return courseService.postCourse(loginAuth, dto);
 	}
+
 
 }

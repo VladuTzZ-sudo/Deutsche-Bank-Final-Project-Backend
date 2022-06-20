@@ -96,4 +96,9 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity handleSectionIdNotFound(){
         return new ResponseEntity("Section ID not found!", HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity handleCourseNotFoundException(){
+        return new ResponseEntity("Course not found!", HttpStatus.NOT_FOUND);
+    }
 }
