@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NewQuizDTO {
     private String token;
-    private int sectionID;
     private Quiz quiz;
 }

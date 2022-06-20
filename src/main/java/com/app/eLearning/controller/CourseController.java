@@ -71,7 +71,7 @@ public class CourseController
 		}
 
 		assert loginAuth != null;
-		if (!loginAuth.getSecond().equals("TEACHER"))
+		if (!loginAuth.getSecond().equals("teacher"))
 		{
 			return new ResponseEntity<>("You are not authorized to create a new course!", HttpStatus.UNAUTHORIZED);
 		}

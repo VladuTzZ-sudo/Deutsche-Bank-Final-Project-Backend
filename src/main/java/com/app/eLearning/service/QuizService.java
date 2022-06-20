@@ -57,19 +57,18 @@ public class QuizService {
 
     }
 
-    public ResponseEntity<String> postQuiz(NewQuizDTO newQuizDTO) throws SectionNotFoundException {
+    public ResponseEntity<String> postQuiz(int sectionId, NewQuizDTO newQuizDTO) throws SectionNotFoundException {
 
         //check if QuizContentDTO has null values
         if (newQuizDTO.getQuiz().getQuizName() == null || newQuizDTO.getQuiz().getDescription() == null ||
                 newQuizDTO.getQuiz().getDeadline() == null) {
             return new ResponseEntity<>("Fields of QuizContentDTO cannot be null", HttpStatus.UNAUTHORIZED);
         }
-        //TODO: add additional validations
 
         Section foundSection = null;
 
         try {
-            foundSection = sectionRepository.findFirstById(newQuizDTO.getSectionID());
+            foundSection = sectionRepository.findFirstById(sectionId);
         } catch (Exception e) {
             e.printStackTrace();
             throw new SectionNotFoundException();

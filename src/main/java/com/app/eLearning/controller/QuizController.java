@@ -48,8 +48,8 @@ public class QuizController {
 
     }
 
-    @PostMapping("/quiz")
-    public ResponseEntity<String> postQuiz(@RequestBody NewQuizDTO newQuizDTO) throws SectionNotFoundException, WrongTokenException {
+    @PostMapping("/sections/{id}/quiz")
+    public ResponseEntity<String> postQuiz(@PathVariable(name = "id")int sectionId, @RequestBody NewQuizDTO newQuizDTO) throws SectionNotFoundException, WrongTokenException {
         Pair<Integer, String> loginAuth = null;
 
         loginAuth = LoginAuthorization.validateAuthorization(newQuizDTO.getToken());
@@ -60,8 +60,11 @@ public class QuizController {
             return new ResponseEntity<>("You are not authorized to create a new quiz!", HttpStatus.UNAUTHORIZED);
         }
 
-        return quizService.postQuiz(newQuizDTO);
-
+        if (sectionId > 0){
+            return quizService.postQuiz(sectionId, newQuizDTO);
+        }else {
+            return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
