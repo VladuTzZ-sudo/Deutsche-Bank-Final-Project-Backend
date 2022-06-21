@@ -32,7 +32,7 @@ CREATE TABLE `answers` (
   PRIMARY KEY (`id`),
   KEY `FKa7obhh0b56p70kf3x0jsfdhog` (`id_question`),
   CONSTRAINT `FKa7obhh0b56p70kf3x0jsfdhog` FOREIGN KEY (`id_question`) REFERENCES `questions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `answers` (
 
 LOCK TABLES `answers` WRITE;
 /*!40000 ALTER TABLE `answers` DISABLE KEYS */;
-INSERT INTO `answers` VALUES (1,'= 9',_binary '\0',1),(2,'= 10',_binary '',1),(3,'= 11',_binary '\0',1);
+INSERT INTO `answers` VALUES (1,'= 9',_binary '\0',1),(2,'= 10',_binary '',1),(3,'= 11',_binary '\0',1),(4,'a language',_binary '',2),(5,'a dialect',_binary '\0',2),(6,'a programming language',_binary '\0',2);
 /*!40000 ALTER TABLE `answers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,7 +85,7 @@ CREATE TABLE `questions` (
   PRIMARY KEY (`id`),
   KEY `FKevbiobobyiwgpro3ogd3tumk5` (`id_quiz`),
   CONSTRAINT `FKevbiobobyiwgpro3ogd3tumk5` FOREIGN KEY (`id_quiz`) REFERENCES `quizzes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `questions` (
 
 LOCK TABLES `questions` WRITE;
 /*!40000 ALTER TABLE `questions` DISABLE KEYS */;
-INSERT INTO `questions` VALUES (1,'What is 5 + 5 ?',1);
+INSERT INTO `questions` VALUES (1,'What is 5 + 5 ?',1),(2,'What is the word English ?',2);
 /*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,7 +113,7 @@ CREATE TABLE `quizzes` (
   `is_visible` bit(1) DEFAULT NULL,
   `quiz_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,7 @@ CREATE TABLE `quizzes` (
 
 LOCK TABLES `quizzes` WRITE;
 /*!40000 ALTER TABLE `quizzes` DISABLE KEYS */;
-INSERT INTO `quizzes` VALUES (1,'2022-02-28 02:00:00.000000','Algebra',60,_binary '\0','Easy math quiz');
+INSERT INTO `quizzes` VALUES (1,'2022-02-28 02:00:00.000000','Algebra',60,_binary '\0','Easy math quiz'),(2,'2022-02-28 02:00:00.000000','English',60,_binary '','Easy language quiz');
 /*!40000 ALTER TABLE `quizzes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -176,7 +176,7 @@ CREATE TABLE `sections` (
 
 LOCK TABLES `sections` WRITE;
 /*!40000 ALTER TABLE `sections` DISABLE KEYS */;
-INSERT INTO `sections` VALUES (1,'First Math Course Section',NULL,1),(2,'Second Math Course Section',NULL,1),(3,'Third Math Course Section',1,1),(4,'First Language Course Section',NULL,2),(5,'Second Language Course Section',NULL,2),(6,'Third Language Course Section',NULL,2),(7,'Fourth Language Course Section',NULL,2);
+INSERT INTO `sections` VALUES (1,'First Math Course Section',NULL,1),(2,'Second Math Course Section',NULL,1),(3,'Third Math Course Section',1,1),(4,'First Language Course Section',NULL,2),(5,'Second Language Course Section',NULL,2),(6,'Third Language Course Section',NULL,2),(7,'Fourth Language Course Section',2,2);
 /*!40000 ALTER TABLE `sections` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,4 +271,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-20 15:52:49
+-- Dump completed on 2022-06-21 15:48:19
