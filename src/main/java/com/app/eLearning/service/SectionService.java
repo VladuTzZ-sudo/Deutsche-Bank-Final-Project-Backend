@@ -7,6 +7,7 @@ import com.app.eLearning.dto.ResponseQuizDTO;
 import com.app.eLearning.dto.ResponseSectionDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.QuizNotFoundException;
+import com.app.eLearning.exceptions.SectionNotFoundException;
 import com.app.eLearning.repository.CourseRepository;
 import com.app.eLearning.repository.SectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,4 +89,29 @@ public class SectionService {
         }
     }
 
+    public Section getSpecificSection(int sectionId, String role) throws SectionNotFoundException {
+
+        Section foundSection = null;
+
+        try {
+            foundSection = sectionRepository.findById(sectionId).get();
+        } catch (Exception e) {
+            throw new SectionNotFoundException();
+        }
+
+        if (foundSection == null){
+            throw new SectionNotFoundException();
+        }
+
+        if (role.equals("teacher")){
+            return foundSection;
+        }else{
+            if (foundSection.getQuiz() != null){
+                if (foundSection.getQuiz().getIsVisible() == false){
+                    foundSection.setQuiz(null);
+                }
+            }
+            return foundSection;
+        }
+    }
 }

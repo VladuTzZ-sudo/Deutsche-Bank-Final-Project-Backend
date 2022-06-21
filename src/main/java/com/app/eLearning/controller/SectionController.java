@@ -4,6 +4,7 @@ import com.app.eLearning.dao.Section;
 import com.app.eLearning.dto.NewSectionDTO;
 import com.app.eLearning.dto.ResponseSectionDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
+import com.app.eLearning.exceptions.SectionNotFoundException;
 import com.app.eLearning.exceptions.WrongTokenException;
 import com.app.eLearning.service.SectionService;
 import com.app.eLearning.service.UserService;
@@ -65,5 +66,24 @@ public class SectionController {
             return null;
         }
 
+    }
+
+    @GetMapping("sections/{id}")
+    @ResponseBody
+    public Section getSpecificSection(@PathVariable (name = "id") int sectionId, @RequestBody String token) throws WrongTokenException, SectionNotFoundException {
+
+        Pair<Integer, String> loginAuth = null;
+
+        loginAuth = LoginAuthorization.validateAuthorization(token);
+
+        if (!userService.checkIfUserExists(loginAuth.getFirst())) {
+            return null;
+        }
+
+        if (sectionId > 0) {
+            return sectionService.getSpecificSection(sectionId, loginAuth.getSecond());
+        } else {
+            return null;
+        }
     }
 }
