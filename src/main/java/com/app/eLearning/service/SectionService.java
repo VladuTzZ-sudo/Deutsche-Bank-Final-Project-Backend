@@ -2,7 +2,6 @@ package com.app.eLearning.service;
 
 import com.app.eLearning.dao.Course;
 import com.app.eLearning.dao.Section;
-import com.app.eLearning.dto.NewSectionDTO;
 import com.app.eLearning.dto.ResponseQuizDTO;
 import com.app.eLearning.dto.ResponseSectionDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
@@ -27,7 +26,7 @@ public class SectionService {
     @Autowired
     CourseRepository courseRepository;
 
-    public ResponseEntity<String> postSection(NewSectionDTO newSectionDTO, int courseID) {
+    public ResponseEntity<String> postSection(Section section, int courseID) {
 
         Course foundCourse = null;
 
@@ -42,7 +41,7 @@ public class SectionService {
         }
 
         try {
-            foundCourse.addSection(newSectionDTO.getSection());
+            foundCourse.addSection(section);
             courseRepository.saveAndFlush(foundCourse);
             return new ResponseEntity<>("Section inserted!", HttpStatus.OK);
         } catch (Exception e) {

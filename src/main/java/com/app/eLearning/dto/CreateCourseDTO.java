@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateCourseDTO
 {
-	private String token;
 	private String name;
 	private String description;
 }

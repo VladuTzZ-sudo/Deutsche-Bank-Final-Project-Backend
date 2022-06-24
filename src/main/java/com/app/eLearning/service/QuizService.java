@@ -2,7 +2,6 @@ package com.app.eLearning.service;
 
 import com.app.eLearning.dao.Quiz;
 import com.app.eLearning.dao.Section;
-import com.app.eLearning.dto.NewQuizDTO;
 import com.app.eLearning.exceptions.QuizNotFoundException;
 import com.app.eLearning.exceptions.SectionNotFoundException;
 import com.app.eLearning.repository.QuizRepository;
@@ -57,11 +56,11 @@ public class QuizService {
 
     }
 
-    public ResponseEntity<String> postQuiz(int sectionId, NewQuizDTO newQuizDTO) throws SectionNotFoundException {
+    public ResponseEntity<String> postQuiz(int sectionId, Quiz quiz) throws SectionNotFoundException {
 
         //check if QuizContentDTO has null values
-        if (newQuizDTO.getQuiz().getQuizName() == null || newQuizDTO.getQuiz().getDescription() == null ||
-                newQuizDTO.getQuiz().getDeadline() == null) {
+        if (quiz.getQuizName() == null || quiz.getDescription() == null ||
+                quiz.getDeadline() == null) {
             return new ResponseEntity<>("Fields of QuizContentDTO cannot be null", HttpStatus.UNAUTHORIZED);
         }
 
@@ -79,7 +78,7 @@ public class QuizService {
         }
 
         try{
-            foundSection.setQuiz(newQuizDTO.getQuiz());
+            foundSection.setQuiz(quiz);
             sectionRepository.saveAndFlush(foundSection);
             return new ResponseEntity<>("Quiz inserted!", HttpStatus.OK);
         }catch (Exception e){

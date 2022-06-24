@@ -1,7 +1,6 @@
 package com.app.eLearning.controller;
 
 import com.app.eLearning.dao.Section;
-import com.app.eLearning.dto.NewSectionDTO;
 import com.app.eLearning.dto.ResponseSectionDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.SectionNotFoundException;
@@ -29,11 +28,11 @@ public class SectionController {
     UserService userService;
 
     @PostMapping("/courses/{id}/sections")
-    public ResponseEntity<String> postSection(@PathVariable (name = "id") int courseId, @RequestBody NewSectionDTO newSectionDTO) throws WrongTokenException {
+    public ResponseEntity<String> postSection(@PathVariable (name = "id") int courseId, @RequestBody Section section, @RequestHeader ("Authorization") String authHeader) throws WrongTokenException {
 
         Pair<Integer, String> loginAuth = null;
 
-        loginAuth = LoginAuthorization.validateAuthorization(newSectionDTO.getToken());
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 
         if (!loginAuth.getSecond().equals("teacher"))
         {
@@ -41,10 +40,10 @@ public class SectionController {
         }
 
         if (courseId <= 0){
-            return new ResponseEntity<>("Course if cannot be negative or zero!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Course cannot be negative or zero!", HttpStatus.BAD_REQUEST);
         }
 
-        return sectionService.postSection(newSectionDTO, courseId);
+        return sectionService.postSection(section, courseId);
 
     }
 

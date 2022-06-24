@@ -77,17 +77,10 @@ public class CourseController {
 
 	// endpoint creare curs de catre profesor
 	@PostMapping("/courses")
-	public ResponseEntity<String> postCourse(@RequestBody CreateCourseDTO dto)
-	{
+	public ResponseEntity<String> postCourse(@RequestBody CreateCourseDTO dto, @RequestHeader ("Authorization") String authHeader) throws WrongTokenException {
 		Pair<Integer, String> loginAuth = null;
-		try
-		{
-			loginAuth = LoginAuthorization.validateAuthorization(dto.getToken());
-		}
-		catch (WrongTokenException e)
-		{
-			e.printStackTrace();
-		}
+
+		loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 
 		assert loginAuth != null;
 		if (!loginAuth.getSecond().equals("teacher"))

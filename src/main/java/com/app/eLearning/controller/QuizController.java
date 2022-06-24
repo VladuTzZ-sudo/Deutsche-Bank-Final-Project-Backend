@@ -1,8 +1,6 @@
 package com.app.eLearning.controller;
 
 import com.app.eLearning.dao.Quiz;
-import com.app.eLearning.dto.NewQuizDTO;
-import com.app.eLearning.dto.ReceivedSectionDTO;
 import com.app.eLearning.exceptions.QuizNotFoundException;
 import com.app.eLearning.exceptions.SectionIdNotFound;
 import com.app.eLearning.exceptions.SectionNotFoundException;
@@ -48,10 +46,10 @@ public class QuizController {
     }
 
     @PostMapping("/sections/{id}/quiz")
-    public ResponseEntity<String> postQuiz(@PathVariable(name = "id")int sectionId, @RequestBody NewQuizDTO newQuizDTO) throws SectionNotFoundException, WrongTokenException {
+    public ResponseEntity<String> postQuiz(@PathVariable(name = "id")int sectionId, @RequestBody Quiz quiz, @RequestHeader ("Authorization") String authHeader) throws SectionNotFoundException, WrongTokenException {
         Pair<Integer, String> loginAuth = null;
 
-        loginAuth = LoginAuthorization.validateAuthorization(newQuizDTO.getToken());
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 
 
         if (!loginAuth.getSecond().equals("teacher"))
@@ -60,7 +58,7 @@ public class QuizController {
         }
 
         if (sectionId > 0){
-            return quizService.postQuiz(sectionId, newQuizDTO);
+            return quizService.postQuiz(sectionId, quiz);
         }else {
             return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
         }
