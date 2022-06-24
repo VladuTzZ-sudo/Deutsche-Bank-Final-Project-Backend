@@ -44,8 +44,11 @@ public class CourseController {
 
 	@GetMapping("/courses")
 	@ResponseBody
-	public List<CourseResponseDTO> getAllCourses(@RequestBody String token) throws WrongTokenException {
+	public List<CourseResponseDTO> getAllCourses(@RequestHeader ("Authorization") String authHeader) throws WrongTokenException {
 		Pair<Integer, String> loginAuth = null;
+
+		String token = authHeader.substring(7);
+
         loginAuth = LoginAuthorization.validateAuthorization(token);
 
 		if (!userService.checkIfUserExists(loginAuth.getFirst())) {
