@@ -27,7 +27,7 @@ public class CourseController {
 
 //	@GetMapping("/courses")
 //	@ResponseBody
-//	public List<CourseResponseDTO> getAllCourses(@RequestBody String token)
+//	public List<CourseResponseDTO> getAllCourses(@RequestBody String token) //!!! @RequestHeader nu body pe GET
 //	{
 //		Pair<Integer, String> loginAuth = null;
 //		try
@@ -62,11 +62,12 @@ public class CourseController {
 	@GetMapping("/courses/{id}")
 	@ResponseBody
 	public CourseResponseDTO getCourse(@PathVariable(required = true, name = "id") Integer id,
-	                                   @RequestBody String token) throws CourseNotFoundException
+									   @RequestHeader ("Authorization") String authHeader) throws CourseNotFoundException
 	{
 		Pair<Integer, String> loginAuth = null;
 		try
 		{
+			String token = authHeader.substring(7);
 			loginAuth = LoginAuthorization.validateAuthorization(token);
 		}
 		catch (WrongTokenException e)

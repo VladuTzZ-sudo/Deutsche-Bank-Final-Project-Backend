@@ -50,9 +50,11 @@ public class SectionController {
 
     @GetMapping("/courses/{id}/sections")
     @ResponseBody
-    public List<ResponseSectionDTO> getSectionsForCourse(@PathVariable (name = "id") int courseId, @RequestBody String token) throws WrongTokenException, CourseNotFoundException {
+    public List<ResponseSectionDTO> getSectionsForCourse(@PathVariable (name = "id") int courseId, @RequestHeader ("Authorization") String authHeader) throws WrongTokenException, CourseNotFoundException {
 
         Pair<Integer, String> loginAuth = null;
+
+        String token = authHeader.substring(7);
 
         loginAuth = LoginAuthorization.validateAuthorization(token);
 
@@ -70,9 +72,11 @@ public class SectionController {
 
     @GetMapping("sections/{id}")
     @ResponseBody
-    public Section getSpecificSection(@PathVariable (name = "id") int sectionId, @RequestBody String token) throws WrongTokenException, SectionNotFoundException {
+    public Section getSpecificSection(@PathVariable (name = "id") int sectionId, @RequestHeader ("Authorization") String authHeader) throws WrongTokenException, SectionNotFoundException {
 
         Pair<Integer, String> loginAuth = null;
+
+        String token = authHeader.substring(7);
 
         loginAuth = LoginAuthorization.validateAuthorization(token);
 

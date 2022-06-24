@@ -28,10 +28,11 @@ public class QuizController {
     UserService userService;
 
     @GetMapping("/sections/{id}/quiz")
-    public ResponseEntity<String> getQuiz(@PathVariable(name = "id")int sectionId, @RequestBody String token) throws QuizNotFoundException, SectionNotFoundException, SectionIdNotFound, WrongTokenException {
+    public ResponseEntity<String> getQuiz(@PathVariable(name = "id")int sectionId, @RequestHeader ("Authorization") String authHeader) throws QuizNotFoundException, SectionNotFoundException, SectionIdNotFound, WrongTokenException {
 
         Pair<Integer, String> loginAuth = null;
 
+        String token = authHeader.substring(7);
 
         loginAuth = LoginAuthorization.validateAuthorization(token);
 
