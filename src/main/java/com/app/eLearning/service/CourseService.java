@@ -55,7 +55,7 @@ public class CourseService
 			}
 
 			for (Course c:courseList) {
-				courseResponseDTOList.add(new CourseResponseDTO(c.getId(), c.getName(), c.getDescription(), c.getTeacherName()));
+				courseResponseDTOList.add(new CourseResponseDTO(c.getId(), c.getName(), c.getTeacherName(), c.getDescription()));
 			}
 
 			return courseResponseDTOList;
