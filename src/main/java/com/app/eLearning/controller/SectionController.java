@@ -54,9 +54,7 @@ public class SectionController {
 
         Pair<Integer, String> loginAuth = null;
 
-        String token = authHeader.substring(7);
-
-        loginAuth = LoginAuthorization.validateAuthorization(token);
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 
         if (!userService.checkIfUserExists(loginAuth.getFirst())) {
             return null;
@@ -76,9 +74,7 @@ public class SectionController {
 
         Pair<Integer, String> loginAuth = null;
 
-        String token = authHeader.substring(7);
-
-        loginAuth = LoginAuthorization.validateAuthorization(token);
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 
         if (!userService.checkIfUserExists(loginAuth.getFirst())) {
             return null;

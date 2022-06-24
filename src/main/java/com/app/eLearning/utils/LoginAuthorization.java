@@ -8,7 +8,7 @@ import org.springframework.data.util.Pair;
 
 public class LoginAuthorization {
 
-    public static Pair<Integer, String> validateAuthorization(String token) throws WrongTokenException {
+    public static Pair<Integer, String> validateAuthorization(String authHeader) throws WrongTokenException {
 
         Verifier verifier = HMACVerifier.newVerifier("my secret key to verify if token is legit ;)");
 
@@ -16,6 +16,7 @@ public class LoginAuthorization {
         String userRole;
 
         try {
+            String token = authHeader.substring(7); //Bearer
             JWT jwt = JWT.getDecoder().decode(token, verifier);
             userId = Integer.parseInt(jwt.subject.split(":")[0]);
             userRole = (String) jwt.audience;
