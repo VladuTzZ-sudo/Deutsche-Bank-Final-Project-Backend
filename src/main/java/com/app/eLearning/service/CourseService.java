@@ -25,23 +25,46 @@ public class CourseService
 	@Autowired
 	UserRepository userRepository;
 
-	public List<CourseResponseDTO> getAllCourses(Pair<Integer, String> authData)
-	{
-		if (authData == null)
+//	public List<CourseResponseDTO> getAllCourses(Pair<Integer, String> authData)
+//	{
+//		if (authData == null)
+//			return null;
+//
+//		User user = userRepository.findById(authData.getFirst()).get();
+//		List<Course> userCourses = user.getUserCourses();
+//
+//		List<CourseResponseDTO> courseDTOList = new ArrayList<>();
+//		for (int i = 0; i < userCourses.size(); i++)
+//		{
+//			Course currentCourse = userCourses.get(i);
+//			courseDTOList.add(new CourseResponseDTO(currentCourse.getId(),
+//					currentCourse.getName(), currentCourse.getTeacherName(),
+//					currentCourse.getDescription()));
+//		}
+//		return courseDTOList;
+//	}
+
+	public List<CourseResponseDTO> getAllCourses(){
+
+		List<CourseResponseDTO> courseResponseDTOList = new ArrayList<>();
+
+		try {
+			List<Course> courseList = courseRepository.findAll();
+			if (courseList == null){
+				return null;
+			}
+
+			for (Course c:courseList) {
+				courseResponseDTOList.add(new CourseResponseDTO(c.getId(), c.getName(), c.getDescription(), c.getTeacherName()));
+			}
+
+			return courseResponseDTOList;
+
+		}catch (Exception e){
+			e.printStackTrace();
 			return null;
-
-		User user = userRepository.findById(authData.getFirst()).get();
-		List<Course> userCourses = user.getUserCourses();
-
-		List<CourseResponseDTO> courseDTOList = new ArrayList<>();
-		for (int i = 0; i < userCourses.size(); i++)
-		{
-			Course currentCourse = userCourses.get(i);
-			courseDTOList.add(new CourseResponseDTO(currentCourse.getId(),
-					currentCourse.getName(), currentCourse.getTeacherName(),
-					currentCourse.getDescription()));
 		}
-		return courseDTOList;
+
 	}
 
 	public CourseResponseDTO getCourse(Pair<Integer, String> authData, Integer id) throws CourseNotFoundException

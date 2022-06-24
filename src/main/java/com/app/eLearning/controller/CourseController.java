@@ -5,6 +5,7 @@ import com.app.eLearning.dto.CreateCourseDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.WrongTokenException;
 import com.app.eLearning.service.CourseService;
+import com.app.eLearning.service.UserService;
 import com.app.eLearning.utils.LoginAuthorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -17,27 +18,43 @@ import java.util.List;
 
 @CrossOrigin
 @Controller
-public class CourseController
-{
+public class CourseController {
 	@Autowired
 	CourseService courseService;
 
+	@Autowired
+	UserService userService;
+
+//	@GetMapping("/courses")
+//	@ResponseBody
+//	public List<CourseResponseDTO> getAllCourses(@RequestBody String token)
+//	{
+//		Pair<Integer, String> loginAuth = null;
+//		try
+//		{
+//			loginAuth = LoginAuthorization.validateAuthorization(token);
+//		}
+//		catch (WrongTokenException e)
+//		{
+//			e.printStackTrace();
+//		}
+//
+//		return courseService.getAllCourses(loginAuth);
+//	}
+
 	@GetMapping("/courses")
 	@ResponseBody
-	public List<CourseResponseDTO> getAllCourses(@RequestBody String token)
-	{
+	public List<CourseResponseDTO> getAllCourses(@RequestBody String token) throws WrongTokenException {
 		Pair<Integer, String> loginAuth = null;
-		try
-		{
-			loginAuth = LoginAuthorization.validateAuthorization(token);
-		}
-		catch (WrongTokenException e)
-		{
-			e.printStackTrace();
+        loginAuth = LoginAuthorization.validateAuthorization(token);
+
+		if (!userService.checkIfUserExists(loginAuth.getFirst())) {
+			return null;
 		}
 
-		return courseService.getAllCourses(loginAuth);
+		return courseService.getAllCourses();
 	}
+
 
 	@GetMapping("/courses/{id}")
 	@ResponseBody
