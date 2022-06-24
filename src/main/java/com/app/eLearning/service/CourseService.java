@@ -113,17 +113,18 @@ public class CourseService
 		// se adauga cursul teacher-ului
 		teacher.getUserCourses().add(course);
 
-		// adaugarea cursului la toti userii studenti
-		List<User> users = userRepository.findAll();
-		for (int i = 0; i < users.size(); i++)
-		{
-			User currentUser = users.get(i);
-			if (currentUser.getUserRole().getRoleId() == 1)
-			{
-				currentUser.getUserCourses().add(course);
-				userRepository.save(currentUser);
-			}
-		}
+		//problema curs duplicat - ne intereseaza ca un curs sa fie adaugat de profesor, dar accesarea cursurilor se face separat de oricine
+//		// adaugarea cursului la toti userii studenti
+//		List<User> users = userRepository.findAll();
+//		for (int i = 0; i < users.size(); i++)
+//		{
+//			User currentUser = users.get(i);
+//			if (currentUser.getUserRole().getRoleId() == 1)
+//			{
+//				currentUser.getUserCourses().add(course);
+//				userRepository.save(currentUser);
+//			}
+//		}
 
 		// salvarea profesorului in baza de date
 		userRepository.save(teacher);
