@@ -34,6 +34,7 @@ public class Quiz {
     @JoinColumn(name = "id_quiz", referencedColumnName = "id")
     private Set<Question> questions;
 
+
     public Quiz(Set<Question> questions) {
         this.questions = questions;
     }

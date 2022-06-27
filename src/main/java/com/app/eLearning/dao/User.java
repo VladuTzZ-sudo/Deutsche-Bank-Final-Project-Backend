@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -17,8 +18,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String name;    //prenume
-    private String surname; //nume de familie
+    private String name;    // prenume
+    private String surname; // nume de familie
     private String email;
     private String password;
 
@@ -30,6 +31,10 @@ public class User {
 
     @ManyToMany(cascade = CascadeType.ALL)
     List<Course> userCourses;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    Set<TakenQuiz> takenQuizzes;
 
     public User(String name, String surname, String email, String password) {
         this.name = name;
