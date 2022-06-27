@@ -65,8 +65,7 @@ public class CourseController {
 		Pair<Integer, String> loginAuth = null;
 		try
 		{
-			String token = authHeader.substring(7);
-			loginAuth = LoginAuthorization.validateAuthorization(token);
+			loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 		}
 		catch (WrongTokenException e)
 		{
