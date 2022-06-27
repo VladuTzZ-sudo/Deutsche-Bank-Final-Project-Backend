@@ -17,6 +17,6 @@ public class GivenAnswer
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "given_answer")
-	private String givenAnswer;
+	// id-ul raspunsului din baza de date
+	private int id_answer;
 }

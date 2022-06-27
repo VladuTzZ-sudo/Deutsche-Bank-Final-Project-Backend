@@ -19,16 +19,15 @@ public class TakenQuiz
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "taken_quiz_id", referencedColumnName = "id")
+	Set<GivenAnswer> givenAnswers;
+
 	@Column(name = "start_date")
 	private Date startDate;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	private Quiz quiz;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "taken_quiz_id", referencedColumnName = "id")
-	Set<GivenAnswer> givenAnswers;
-
-	@OneToOne
-	private Grade grade;
+	private float grade;
 }
