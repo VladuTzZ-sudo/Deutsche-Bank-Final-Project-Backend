@@ -19,4 +19,8 @@ public class GivenAnswer
 
 	// id-ul raspunsului din baza de date
 	private int id_answer;
+
+	public GivenAnswer(int id_answer) {
+		this.id_answer = id_answer;
+	}
 }

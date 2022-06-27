@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -23,11 +23,14 @@ public class TakenQuiz
 	@JoinColumn(name = "taken_quiz_id", referencedColumnName = "id")
 	Set<GivenAnswer> givenAnswers;
 
-	@Column(name = "start_date")
-	private Date startDate;
+	@Column(name = "submitted_date")
+	@Temporal(TemporalType.DATE)
+	private Date submittedDate;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	private Quiz quiz;
 
 	private float grade;
+
+
 }

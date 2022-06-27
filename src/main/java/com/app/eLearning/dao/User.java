@@ -42,6 +42,10 @@ public class User {
         this.email = email;
         this.password = password;
     }
+
+    public void addTakenQuiz(TakenQuiz takenQuiz){
+        this.takenQuizzes.add(takenQuiz);
+    }
 }
 
 
