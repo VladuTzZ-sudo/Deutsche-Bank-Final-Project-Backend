@@ -27,6 +27,9 @@ public class TakenQuiz
 	@Temporal(TemporalType.DATE)
 	private Date submittedDate;
 
+	@Column(name = "start_date_time")
+	private Date startDateTime;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	private Quiz quiz;
 
