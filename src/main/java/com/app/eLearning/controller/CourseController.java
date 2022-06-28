@@ -25,23 +25,6 @@ public class CourseController {
 	@Autowired
 	UserService userService;
 
-//	@GetMapping("/courses")
-//	@ResponseBody
-//	public List<CourseResponseDTO> getAllCourses(@RequestBody String token) //!!! @RequestHeader nu body pe GET
-//	{
-//		Pair<Integer, String> loginAuth = null;
-//		try
-//		{
-//			loginAuth = LoginAuthorization.validateAuthorization(token);
-//		}
-//		catch (WrongTokenException e)
-//		{
-//			e.printStackTrace();
-//		}
-//
-//		return courseService.getAllCourses(loginAuth);
-//	}
-
 	@GetMapping("/courses")
 	@ResponseBody
 	public List<CourseResponseDTO> getAllCourses(@RequestHeader ("Authorization") String authHeader) throws WrongTokenException {
