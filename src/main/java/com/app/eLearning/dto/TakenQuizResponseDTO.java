@@ -14,9 +14,9 @@ public class TakenQuizResponseDTO {
     private String sectionTitle;
     private String quizTitle;
     private int durationQuiz;
-    private Date endDateQuiz;
+    private Long endDateQuiz;
     private String detailsQuiz;
-    private Date submittedDate;
+    private Long submittedDate;
     private float quizMark;
     private int isQuizEnded;
 

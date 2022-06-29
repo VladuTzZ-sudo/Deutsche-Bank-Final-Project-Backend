@@ -2,10 +2,7 @@ package com.app.eLearning.controller;
 
 import com.app.eLearning.dto.GivenAnswersDTO;
 import com.app.eLearning.dto.TakenQuizResponseDTO;
-import com.app.eLearning.exceptions.CourseNotFoundException;
-import com.app.eLearning.exceptions.QuizNotFoundException;
-import com.app.eLearning.exceptions.SectionIdNotFound;
-import com.app.eLearning.exceptions.WrongTokenException;
+import com.app.eLearning.exceptions.*;
 import com.app.eLearning.service.TakenQuizService;
 import com.app.eLearning.utils.LoginAuthorization;
 import org.springframework.beans.factory.annotation.Autowired;

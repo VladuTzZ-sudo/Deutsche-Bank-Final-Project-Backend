@@ -24,7 +24,6 @@ public class TakenQuiz
 	Set<GivenAnswer> givenAnswers;
 
 	@Column(name = "submitted_date")
-	@Temporal(TemporalType.DATE)
 	private Date submittedDate;
 
 	@Column(name = "start_date_time")

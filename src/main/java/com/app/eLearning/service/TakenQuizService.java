@@ -89,7 +89,7 @@ public class TakenQuizService {
 
         takenQuiz.setGivenAnswers(givenAnswerList);
         takenQuiz.setGrade((correctAnswerCounter * 100) / takenQuiz.getGivenAnswers().size());
-        
+
         Date currentDate = new Date(System.currentTimeMillis());
 
         takenQuiz.setSubmittedDate(currentDate);
@@ -139,7 +139,7 @@ public class TakenQuizService {
         takenQuizResponseDTO.setSectionTitle(foundSection.getTitle());
         takenQuizResponseDTO.setQuizTitle(foundQuiz.getQuizName());
         takenQuizResponseDTO.setDurationQuiz(foundQuiz.getDuration());
-        takenQuizResponseDTO.setEndDateQuiz(foundQuiz.getDeadline());
+        takenQuizResponseDTO.setEndDateQuiz(foundQuiz.getDeadline().getTime());
         takenQuizResponseDTO.setDetailsQuiz(foundQuiz.getDescription());
 
         TakenQuiz foundTakenQuiz = null;
@@ -147,7 +147,7 @@ public class TakenQuizService {
         for (TakenQuiz e : foundUser.getTakenQuizzes()) {
             if (e.getQuiz().getId() == foundQuiz.getId()) {
                 foundTakenQuiz = e;
-                takenQuizResponseDTO.setSubmittedDate(e.getSubmittedDate());
+                takenQuizResponseDTO.setSubmittedDate(e.getSubmittedDate().getTime());
                 takenQuizResponseDTO.setQuizMark(e.getGrade());
                 break;
             }

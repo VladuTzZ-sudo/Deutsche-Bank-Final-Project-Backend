@@ -1,6 +1,7 @@
 package com.app.eLearning.service;
 
 import com.app.eLearning.dao.Quiz;
+import com.app.eLearning.dao.ReceivedQuizDTO;
 import com.app.eLearning.dao.Section;
 import com.app.eLearning.exceptions.QuizNotFoundException;
 import com.app.eLearning.exceptions.SectionNotFoundException;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class QuizService {
@@ -56,12 +59,12 @@ public class QuizService {
 
     }
 
-    public ResponseEntity<String> postQuiz(int sectionId, Quiz quiz) throws SectionNotFoundException {
+    public ResponseEntity<String> postQuiz(int sectionId, ReceivedQuizDTO receivedQuizDTO) throws SectionNotFoundException {
 
         //check if QuizContentDTO has null values
-        if (quiz.getQuizName() == null || quiz.getDescription() == null ||
-                quiz.getDeadline() == null) {
-            return new ResponseEntity<>("Fields of QuizContentDTO cannot be null", HttpStatus.UNAUTHORIZED);
+        if (receivedQuizDTO.getQuizName() == null || receivedQuizDTO.getDescription() == null ||
+                receivedQuizDTO.getDeadline() == null) {
+            return new ResponseEntity<>("Fields of Quiz cannot be null", HttpStatus.UNAUTHORIZED);
         }
 
         Section foundSection = null;
@@ -78,6 +81,14 @@ public class QuizService {
         }
 
         try{
+            Quiz quiz = new Quiz();
+            quiz.setQuizName(receivedQuizDTO.getQuizName());
+            quiz.setDescription(receivedQuizDTO.getDescription());
+            quiz.setQuestions(receivedQuizDTO.getQuestions());
+            quiz.setIsVisible(receivedQuizDTO.getIsVisible());
+            quiz.setDuration(receivedQuizDTO.getDuration());
+            quiz.setDeadline(new Date(receivedQuizDTO.getDeadline()));
+
             foundSection.setQuiz(quiz);
             sectionRepository.saveAndFlush(foundSection);
             return new ResponseEntity<>("Quiz inserted!", HttpStatus.OK);
