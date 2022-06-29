@@ -1,5 +1,6 @@
 package com.app.eLearning.controller;
 
+import com.app.eLearning.dto.GivenAnswersDTO;
 import com.app.eLearning.dto.TakenQuizResponseDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.QuizNotFoundException;
@@ -24,7 +25,7 @@ public class TakenQuizController {
     TakenQuizService takenQuizService;
 
     @PostMapping("/quiz/{id}/takenQuiz")
-    public ResponseEntity<String> postTakenQuiz(@PathVariable(name = "id")int quizId, @RequestBody List<Integer> answerIdList, @RequestHeader("Authorization") String authHeader) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity<String> postTakenQuiz(@PathVariable(name = "id")int quizId, @RequestBody List<GivenAnswersDTO> givenAnswersDTOList, @RequestHeader("Authorization") String authHeader) throws WrongTokenException, QuizNotFoundException {
 
         Pair<Integer, String> loginAuth = null;
 
@@ -40,7 +41,7 @@ public class TakenQuizController {
             return new ResponseEntity<>("QuizId cannot be negative or zero!", HttpStatus.BAD_REQUEST);
         }
 
-        return takenQuizService.postTakenQuiz(loginAuth.getFirst(), answerIdList, quizId);
+        return takenQuizService.postTakenQuiz(loginAuth.getFirst(), givenAnswersDTOList, quizId);
 
     }
 

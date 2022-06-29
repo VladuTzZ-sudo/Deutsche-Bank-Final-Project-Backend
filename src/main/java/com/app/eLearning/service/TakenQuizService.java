@@ -1,6 +1,7 @@
 package com.app.eLearning.service;
 
 import com.app.eLearning.dao.*;
+import com.app.eLearning.dto.GivenAnswersDTO;
 import com.app.eLearning.dto.TakenQuizResponseDTO;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.repository.*;
@@ -36,19 +37,22 @@ public class TakenQuizService {
     @Autowired
     SectionRepository sectionRepository;
 
-    public ResponseEntity<String> postTakenQuiz(Integer userId, List<Integer> answerIdList, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity<String> postTakenQuiz(Integer userId, List<GivenAnswersDTO> givenAnswersDTOList, int quizId) throws WrongTokenException, QuizNotFoundException {
 
         User foundUser = userRepository.findById(userId).get();
         Quiz foundQuiz = null;
         int correctAnswerCounter = 0;
 
-
         Set<GivenAnswer> givenAnswerList = new HashSet<>();
-        for (int e : answerIdList) {
-            givenAnswerList.add(new GivenAnswer(e));
 
-            if (answerRepository.findById(e).get().isValidation() == true) {
-                correctAnswerCounter++;
+        for (GivenAnswersDTO e : givenAnswersDTOList) {
+            givenAnswerList.add(new GivenAnswer(e.getAnswerId(), e.getQuestionId()));
+            try {
+                if (answerRepository.findById(e.getAnswerId()).get().isValidation() == true) {
+                    correctAnswerCounter++;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
 
@@ -79,14 +83,13 @@ public class TakenQuizService {
             return new ResponseEntity<>("Taken quiz nu exista, ai uitat sa faci GET de start time la inceputul quiz-ului???", HttpStatus.BAD_REQUEST);
         }
 
-        if (takenQuiz.getGivenAnswers().size() > 0){
+        if (takenQuiz.getGivenAnswers().size() > 0) {
             return new ResponseEntity<>("Answers have already been given to this quiz from this user", HttpStatus.BAD_REQUEST);
         }
 
         takenQuiz.setGivenAnswers(givenAnswerList);
         takenQuiz.setGrade((correctAnswerCounter * 100) / takenQuiz.getGivenAnswers().size());
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        
         Date currentDate = new Date(System.currentTimeMillis());
 
         takenQuiz.setSubmittedDate(currentDate);
