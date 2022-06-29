@@ -83,5 +83,23 @@ public class TakenQuizController {
 
     }
 
+    @GetMapping("/quiz/{quizId}/takenQuiz/answers")
+    public ResponseEntity getAnswersDTO(@RequestHeader("Authorization") String authHeader, @PathVariable(name = "quizId")int quizId) throws WrongTokenException, QuizNotFoundException {
+        Pair<Integer, String> loginAuth = null;
+
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+        if (!loginAuth.getSecond().equals("student"))
+        {
+            return new ResponseEntity<>("Profesorii nu au dreptul la quiz summary", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (quizId <= 0){
+            return new ResponseEntity<>("QuizId nu poate fi negativ sau zero", HttpStatus.BAD_REQUEST);
+        }
+
+        return takenQuizService.getAnswersResponseDTO(loginAuth.getFirst(), quizId);
+
+    }
 
 }

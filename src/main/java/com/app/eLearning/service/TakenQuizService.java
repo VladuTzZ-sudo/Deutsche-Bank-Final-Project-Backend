@@ -1,8 +1,7 @@
 package com.app.eLearning.service;
 
 import com.app.eLearning.dao.*;
-import com.app.eLearning.dto.GivenAnswersDTO;
-import com.app.eLearning.dto.TakenQuizResponseDTO;
+import com.app.eLearning.dto.*;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.repository.*;
 import org.apache.tomcat.jni.Local;
@@ -206,5 +205,73 @@ public class TakenQuizService {
         userRepository.save(foundUser);
 
         return new ResponseEntity<>(takenQuiz.getStartDateTime().getTime(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getAnswersResponseDTO(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+        Quiz foundQuiz = null;
+        User foundUser = null;
+
+        try {
+            foundUser = userRepository.findById(userId).get();
+        } catch (Exception e) {
+            throw new WrongTokenException();
+        }
+
+        try {
+            foundQuiz = quizRepository.findById(quizId).get();
+        } catch (Exception e) {
+            throw new QuizNotFoundException();
+        }
+
+        if (foundUser == null) {
+            return new ResponseEntity<>("Utilizatorul nu poate fi identificat", HttpStatus.BAD_REQUEST);
+        }
+
+        if (foundQuiz == null || foundQuiz.getIsVisible() == false) {
+            return new ResponseEntity<>("Quiz-ul nu exista sau nu este activ!", HttpStatus.BAD_REQUEST);
+        }
+
+        TakenQuiz foundTakenQuiz = null;
+
+        for (TakenQuiz e : foundUser.getTakenQuizzes()) {
+            if (e.getQuiz().getId() == foundQuiz.getId()) {
+                foundTakenQuiz = e;
+            }
+        }
+
+        if (foundTakenQuiz == null) {
+            return new ResponseEntity<>("Utilizatorul nu a dat acest quiz!", HttpStatus.BAD_REQUEST);
+        }
+
+        List<QuestionResponseDTO> questionResponseDTOList = new ArrayList<>();
+
+        for (Question question : foundTakenQuiz.getQuiz().getQuestions()) {
+          QuestionResponseDTO questionResponseDTO = new QuestionResponseDTO(question.getContentQuestion());
+
+            Set<AnswerResponseDTO> answerResponseDTOList = new HashSet<>();
+            for (Answer answer : question.getAnswers()){
+                answerResponseDTOList.add(new AnswerResponseDTO(answer.getId(), answer.getAnswerContent(),answer.isValidation()));
+            }
+
+            GivenAnswer foundGivenAnswerForThisQuestion = null;
+            for (GivenAnswer givenAnswer : foundTakenQuiz.getGivenAnswers()){
+                if (givenAnswer.getId_question() == question.getId()){
+                    foundGivenAnswerForThisQuestion = givenAnswer;
+                }
+            }
+
+            for (AnswerResponseDTO answerResponseDTO : answerResponseDTOList){
+                if (answerResponseDTO.getAnswerId() == foundGivenAnswerForThisQuestion.getId_answer()){
+                    answerResponseDTO.setUserAnswer(true);
+                }
+            }
+
+            questionResponseDTO.setAnswers(answerResponseDTOList);
+            questionResponseDTOList.add(questionResponseDTO);
+
+        }
+
+        return new ResponseEntity<>(questionResponseDTOList, HttpStatus.OK);
+
     }
 }
