@@ -191,7 +191,7 @@ public class TakenQuizService {
 
         for (TakenQuiz e : foundUser.getTakenQuizzes()) {
             if (e.getQuiz().getId() == foundQuiz.getId()) {
-                return new ResponseEntity<>(e.getStartDateTime(), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(e.getStartDateTime().getTime(), HttpStatus.OK);
             }
         }
 
@@ -202,6 +202,6 @@ public class TakenQuizService {
         foundUser.addTakenQuiz(takenQuiz);
         userRepository.save(foundUser);
 
-        return new ResponseEntity<>(takenQuiz.getStartDateTime(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(takenQuiz.getStartDateTime().getTime(), HttpStatus.OK);
     }
 }
