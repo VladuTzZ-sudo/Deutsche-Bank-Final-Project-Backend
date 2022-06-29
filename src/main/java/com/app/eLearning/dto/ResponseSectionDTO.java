@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class ResponseSectionDTO {
     private int id;
     private String title;
+    private String description;
     private ResponseQuizDTO quiz;
 }

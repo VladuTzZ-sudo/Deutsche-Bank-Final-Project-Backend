@@ -18,99 +18,132 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SectionService {
+public class SectionService
+{
 
-    @Autowired
-    SectionRepository sectionRepository;
+	@Autowired
+	SectionRepository sectionRepository;
 
-    @Autowired
-    CourseRepository courseRepository;
+	@Autowired
+	CourseRepository courseRepository;
 
-    public ResponseEntity<String> postSection(Section section, int courseID) {
+	public ResponseEntity<String> postSection(Section section, int courseID)
+	{
 
-        Course foundCourse = null;
+		Course foundCourse = null;
 
-        try {
-            foundCourse = courseRepository.findById(courseID).get();
-        } catch (Exception e) {
-            return new ResponseEntity<>("Course not found!", HttpStatus.BAD_REQUEST);
-        }
+		try
+		{
+			foundCourse = courseRepository.findById(courseID).get();
+		}
+		catch (Exception e)
+		{
+			return new ResponseEntity<>("Course not found!", HttpStatus.BAD_REQUEST);
+		}
 
-        if (foundCourse == null) {
-            return new ResponseEntity<>("Course not found!", HttpStatus.BAD_REQUEST);
-        }
+		try
+		{
+			foundCourse.addSection(section);
+			courseRepository.saveAndFlush(foundCourse);
+			return new ResponseEntity<>("Section inserted!", HttpStatus.OK);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ResponseEntity<>("Could not insert new Section", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
-        try {
-            foundCourse.addSection(section);
-            courseRepository.saveAndFlush(foundCourse);
-            return new ResponseEntity<>("Section inserted!", HttpStatus.OK);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("Could not insert new Section", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+	public List<ResponseSectionDTO> getSectionsForCourse(int courseId, String role) throws CourseNotFoundException
+	{
+		Course foundCourse = null;
 
-    public List<ResponseSectionDTO> getSectionsForCourse(int courseId, String role) throws CourseNotFoundException {
-        Course foundCourse = null;
+		List<ResponseSectionDTO> sectionListDTO = new ArrayList<>();
 
-        List<ResponseSectionDTO> sectionListDTO = new ArrayList<>();
+		try
+		{
+			foundCourse = courseRepository.findById(courseId).get();
+		}
+		catch (Exception e)
+		{
+			throw new CourseNotFoundException();
+		}
 
-        try {
-            foundCourse = courseRepository.findById(courseId).get();
-        } catch (Exception e) {
-            throw new CourseNotFoundException();
-        }
+		if (foundCourse == null)
+		{
+			throw new CourseNotFoundException();
+		}
 
-        if (foundCourse == null) {
-            throw new CourseNotFoundException();
-        }
+		if (role.equals("teacher"))
+		{
+			for (Section s : foundCourse.getCourseSections())
+			{
+				if (s.getQuiz() == null)
+				{
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null));
+				}
+				else
+				{
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible())));
+				}
+			}
+			return sectionListDTO;
+		}
+		else
+		{
+			for (Section s : foundCourse.getCourseSections())
+			{
+				if (s.getQuiz() == null)
+				{
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null));
+				}
+				else if (s.getQuiz().getIsVisible())
+				{
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible())));
+				}
+				else if (!s.getQuiz().getIsVisible())
+				{
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null));
+				}
+			}
+			return sectionListDTO;
+		}
+	}
 
-        if (role.equals("teacher")) {
-            for (Section s : foundCourse.getCourseSections()) {
-                if (s.getQuiz() == null) {
-                    sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), null));
-                } else {
-                    sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible())));
-                }
-            }
-            return sectionListDTO;
-        } else {
-            for (Section s : foundCourse.getCourseSections()) {
-                if (s.getQuiz() == null) {
-                    sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), null));
-                } else if (s.getQuiz().getIsVisible() == true) {
-                    sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible())));
-                } else if (s.getQuiz().getIsVisible() == false) {
-                    sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), null));
-                }
-            }
-            return sectionListDTO;
-        }
-    }
+	public Section getSpecificSection(int sectionId, String role) throws SectionNotFoundException
+	{
 
-    public Section getSpecificSection(int sectionId, String role) throws SectionNotFoundException {
+		Section foundSection = null;
 
-        Section foundSection = null;
+		try
+		{
+			foundSection = sectionRepository.findById(sectionId).get();
+		}
+		catch (Exception e)
+		{
+			throw new SectionNotFoundException();
+		}
 
-        try {
-            foundSection = sectionRepository.findById(sectionId).get();
-        } catch (Exception e) {
-            throw new SectionNotFoundException();
-        }
+		if (foundSection == null)
+		{
+			throw new SectionNotFoundException();
+		}
 
-        if (foundSection == null){
-            throw new SectionNotFoundException();
-        }
+		if (role.equals("teacher"))
+		{
+			return foundSection;
+		}
+		else
+		{
+			if (foundSection.getQuiz() != null)
+			{
+				if (foundSection.getQuiz().getIsVisible() == false)
+				{
+					foundSection.setQuiz(null);
+				}
+			}
+			return foundSection;
+		}
+	}
 
-        if (role.equals("teacher")){
-            return foundSection;
-        }else{
-            if (foundSection.getQuiz() != null){
-                if (foundSection.getQuiz().getIsVisible() == false){
-                    foundSection.setQuiz(null);
-                }
-            }
-            return foundSection;
-        }
-    }
 }

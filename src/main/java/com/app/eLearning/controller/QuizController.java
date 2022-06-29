@@ -1,6 +1,8 @@
 package com.app.eLearning.controller;
 
 import com.app.eLearning.dao.Quiz;
+import com.app.eLearning.dto.QuizDTO;
+import com.app.eLearning.exceptions.*;
 import com.app.eLearning.dao.ReceivedQuizDTO;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.service.QuizService;
@@ -15,33 +17,62 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @Controller
-public class QuizController {
+public class QuizController
+{
 
-    @Autowired
-    QuizService quizService;
+	@Autowired
+	QuizService quizService;
 
-    @Autowired
-    UserService userService;
+	@Autowired
+	UserService userService;
 
-    @GetMapping("/sections/{id}/quiz")
-    public ResponseEntity<String> getQuiz(@PathVariable(name = "id")int sectionId, @RequestHeader ("Authorization") String authHeader) throws QuizNotFoundException, SectionNotFoundException, SectionIdNotFound, WrongTokenException {
+	@GetMapping("/courses/{courseId}/sections/{sectionId}/quizPlay")
+	public ResponseEntity getQuestionsAndAnswers(@PathVariable(name = "courseId") int courseId, @PathVariable(name = "sectionId") int sectionId,
+	                                             @RequestHeader("Authorization") String authHeader) throws WrongTokenException, SectionNotFoundException, QuizNotFoundException
+	{
+		Pair<Integer, String> loginAuth = null;
 
-        Pair<Integer, String> loginAuth = null;
+		loginAuth = LoginAuthorization.validateAuthorization(authHeader);
 
-        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+		if (!userService.checkIfUserExists(loginAuth.getFirst()))
+		{
+			return new ResponseEntity<>("The user id you provided is not valid!", HttpStatus.UNAUTHORIZED);
+		}
 
+		if (sectionId > 0)
+		{
+			return quizService.getQuestionsAndAnswers(loginAuth.getSecond(), courseId, sectionId);
+		}
+		else
+		{
+			return new ResponseEntity<>("The section id you provided is not valid!", HttpStatus.BAD_REQUEST);
+		}
+	}
 
-        if (!userService.checkIfUserExists(loginAuth.getFirst())) {
-            return new ResponseEntity<>("Access forbidden! User account doesn't exist or is inactive.", HttpStatus.UNAUTHORIZED);
-        }
+	@GetMapping("/courses/{courseId}/sections/{sectionId}/quizStart")
+	public ResponseEntity<QuizDTO> getQuiz(@PathVariable(name = "courseId") int courseId, @PathVariable(name = "sectionId") int sectionId,
+	                                       @RequestHeader("Authorization") String authHeader) throws QuizNotFoundException, SectionNotFoundException, WrongTokenException, CourseNotFoundException
+	{
 
-        if (sectionId > 0) {
-            return new ResponseEntity(quizService.getQuizForSpecificSectionId(sectionId, loginAuth.getSecond()), HttpStatus.OK);
-        } else {
-            return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
-        }
+		Pair<Integer, String> loginAuth = null;
 
-    }
+		loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+		if (!userService.checkIfUserExists(loginAuth.getFirst()))
+		{
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		}
+
+		if (sectionId > 0)
+		{
+			return quizService.getQuizDetails(loginAuth.getSecond(), courseId, sectionId);
+		}
+		else
+		{
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+	}
+
 
     @PostMapping("/sections/{id}/quiz")
     public ResponseEntity<String> postQuiz(@PathVariable(name = "id")int sectionId, @RequestBody ReceivedQuizDTO receivedQuizDTO, @RequestHeader ("Authorization") String authHeader) throws SectionNotFoundException, WrongTokenException {
