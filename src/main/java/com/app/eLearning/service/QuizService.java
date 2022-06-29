@@ -78,7 +78,7 @@ public class QuizService {
 				quizDTO.setQuizTitle(foundSection.getQuiz().getQuizName());
 				quizDTO.setDetails(foundSection.getQuiz().getDescription());
 				quizDTO.setDuration(foundSection.getQuiz().getDuration());
-				quizDTO.setEndDate(foundSection.getQuiz().getDeadline());
+				quizDTO.setEndDate(foundSection.getQuiz().getDeadline().getTime());
 				quizDTO.setSubjectTitle(foundCourse.getName());
 				quizDTO.setSectionTitle(foundSection.getTitle());
 				return new ResponseEntity<>(quizDTO, HttpStatus.OK);
@@ -95,7 +95,7 @@ public class QuizService {
 					quizDTO.setQuizTitle(foundSection.getQuiz().getQuizName());
 					quizDTO.setDetails(foundSection.getQuiz().getDescription());
 					quizDTO.setDuration(foundSection.getQuiz().getDuration());
-					quizDTO.setEndDate(foundSection.getQuiz().getDeadline());
+					quizDTO.setEndDate(foundSection.getQuiz().getDeadline().getTime());
 					quizDTO.setSubjectTitle(foundCourse.getName());
 					quizDTO.setSectionTitle(foundSection.getTitle());
 					return new ResponseEntity<>(quizDTO, HttpStatus.OK);

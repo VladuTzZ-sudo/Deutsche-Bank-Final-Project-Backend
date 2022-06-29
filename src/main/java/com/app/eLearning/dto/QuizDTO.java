@@ -15,6 +15,6 @@ public class QuizDTO
 	private String sectionTitle;
 	private String quizTitle;
 	private int duration;
-	private Date endDate;
+	private long endDate;
 	private String details;
 }
