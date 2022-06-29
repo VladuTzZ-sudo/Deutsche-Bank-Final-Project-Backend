@@ -132,6 +132,25 @@ public class TakenQuizService {
             return new ResponseEntity<>("Nu a fost gasit un obiect: user, course, section sau quiz", HttpStatus.BAD_REQUEST);
         }
 
+        boolean isSectionInCourse = false;
+        for (Section section : foundCourse.getCourseSections()){
+            if (section.getId() == foundSection.getId()){
+                isSectionInCourse = true;
+            }
+        }
+
+        if (isSectionInCourse == false){
+            return new ResponseEntity<>("Sectiunea identificata nu face parte din cursul dat!", HttpStatus.BAD_REQUEST);
+        }
+
+        if (foundSection.getQuiz() == null){
+            throw new QuizNotFoundException();
+        }
+
+        if (foundSection.getQuiz().getId() != foundQuiz.getId()){
+            return new ResponseEntity<>("Quiz-ul identificat nu face parte din sectiunea data!", HttpStatus.BAD_REQUEST);
+        }
+
         TakenQuizResponseDTO takenQuizResponseDTO = new TakenQuizResponseDTO();
 
         takenQuizResponseDTO.setCourseTitle(foundCourse.getName());
