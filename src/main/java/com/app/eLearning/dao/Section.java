@@ -19,6 +19,8 @@ public class Section
 
 	private String title;
 
+	private String description;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	private Quiz quiz;
 

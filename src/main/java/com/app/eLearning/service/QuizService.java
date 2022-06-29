@@ -105,7 +105,7 @@ public class QuizService
 	}
 
 
-	public ResponseEntity<Set<Question>> getQuestionsAndAnswers(String role, int courseId, int sectionId) throws SectionNotFoundException, QuizNotFoundException
+	public ResponseEntity getQuestionsAndAnswers(String role, int courseId, int sectionId) throws SectionNotFoundException, QuizNotFoundException
 	{
 		Section foundSection = null;
 
@@ -126,20 +126,19 @@ public class QuizService
 
 		if (foundSection.getQuiz() != null)
 		{
-			if(role.equals("student") && !foundSection.getQuiz().getIsVisible())
+			if (role.equals("student") && !foundSection.getQuiz().getIsVisible())
 			{
 				throw new QuizNotFoundException();
 			}
 			return new ResponseEntity<>(foundSection.getQuiz().getQuestions(), HttpStatus.OK);
 		}
 		else
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			throw new QuizNotFoundException();
 	}
 
 	public ResponseEntity<String> postQuiz(int sectionId, Quiz quiz) throws SectionNotFoundException
 	{
 
-		//check if QuizContentDTO has null values
 		if (quiz.getQuizName() == null || quiz.getDescription() == null ||
 				quiz.getDeadline() == null)
 		{

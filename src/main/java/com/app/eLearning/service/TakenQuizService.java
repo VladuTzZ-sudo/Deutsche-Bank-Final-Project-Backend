@@ -1,7 +1,7 @@
 package com.app.eLearning.service;
 
 import com.app.eLearning.dao.*;
-import com.app.eLearning.dto.TakenQuizResponseDTO;
+import com.app.eLearning.dto.*;
 import com.app.eLearning.exceptions.*;
 import com.app.eLearning.repository.*;
 import org.apache.tomcat.jni.Local;
@@ -36,19 +36,22 @@ public class TakenQuizService {
     @Autowired
     SectionRepository sectionRepository;
 
-    public ResponseEntity<String> postTakenQuiz(Integer userId, List<Integer> answerIdList, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity<String> postTakenQuiz(Integer userId, List<GivenAnswersDTO> givenAnswersDTOList, int quizId) throws WrongTokenException, QuizNotFoundException {
 
         User foundUser = userRepository.findById(userId).get();
         Quiz foundQuiz = null;
         int correctAnswerCounter = 0;
 
-
         Set<GivenAnswer> givenAnswerList = new HashSet<>();
-        for (int e : answerIdList) {
-            givenAnswerList.add(new GivenAnswer(e));
 
-            if (answerRepository.findById(e).get().isValidation() == true){
-                correctAnswerCounter ++;
+        for (GivenAnswersDTO e : givenAnswersDTOList) {
+            givenAnswerList.add(new GivenAnswer(e.getAnswerId(), e.getQuestionId()));
+            try {
+                if (answerRepository.findById(e.getAnswerId()).get().isValidation() == true) {
+                    correctAnswerCounter++;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
 
@@ -63,29 +66,39 @@ public class TakenQuizService {
         }
 
         if (foundQuiz == null || foundQuiz.getIsVisible() == false) {
-            throw new QuizNotFoundException();
+            return new ResponseEntity<>("Quiz-ul nu exista sau nu este activ!", HttpStatus.BAD_REQUEST);
         }
 
+        TakenQuiz takenQuiz = null;
 
-        TakenQuiz takenQuiz = new TakenQuiz();
+        for (TakenQuiz e : foundUser.getTakenQuizzes()) {
+            if (e.getQuiz().getId() == foundQuiz.getId()) {
+                takenQuiz = e;
+                break;
+            }
+        }
 
-        takenQuiz.setQuiz(foundQuiz);
+        if (takenQuiz == null) {
+            return new ResponseEntity<>("Taken quiz nu exista, ai uitat sa faci GET de start time la inceputul quiz-ului???", HttpStatus.BAD_REQUEST);
+        }
+
+        if (takenQuiz.getGivenAnswers().size() > 0) {
+            return new ResponseEntity<>("Answers have already been given to this quiz from this user", HttpStatus.BAD_REQUEST);
+        }
+
         takenQuiz.setGivenAnswers(givenAnswerList);
-        takenQuiz.setGrade((correctAnswerCounter * 100)/takenQuiz.getGivenAnswers().size());
+        takenQuiz.setGrade((correctAnswerCounter * 100) / takenQuiz.getGivenAnswers().size());
 
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-mm-dd");
         Date currentDate = new Date(System.currentTimeMillis());
+
         takenQuiz.setSubmittedDate(currentDate);
 
-
-        foundUser.addTakenQuiz(takenQuiz);
-
-        userRepository.save(foundUser);
+        takenQuizRepository.save(takenQuiz);
 
         return new ResponseEntity<>("Answers recorded successfully!", HttpStatus.OK);
     }
 
-    public ResponseEntity<TakenQuizResponseDTO> getTakenQuiz(Integer userId, int courseId, int sectionId, int quizId) throws CourseNotFoundException, SectionIdNotFound, QuizNotFoundException, WrongTokenException {
+    public ResponseEntity getTakenQuiz(Integer userId, int courseId, int sectionId, int quizId) throws CourseNotFoundException, SectionIdNotFound, QuizNotFoundException, WrongTokenException {
         User foundUser = null;
         Course foundCourse = null;
         Section foundSection = null;
@@ -93,30 +106,30 @@ public class TakenQuizService {
 
         try {
             foundCourse = courseRepository.findById(courseId).get();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new CourseNotFoundException();
         }
 
         try {
             foundSection = sectionRepository.findById(sectionId).get();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new SectionIdNotFound();
         }
 
         try {
             foundQuiz = quizRepository.findById(quizId).get();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new QuizNotFoundException();
         }
 
         try {
             foundUser = userRepository.findById(userId).get();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new WrongTokenException();
         }
 
-        if (foundUser == null || foundCourse == null || foundSection == null || foundQuiz == null){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        if (foundUser == null || foundCourse == null || foundSection == null || foundQuiz == null) {
+            return new ResponseEntity<>("Nu a fost gasit un obiect: user, course, section sau quiz", HttpStatus.BAD_REQUEST);
         }
 
         TakenQuizResponseDTO takenQuizResponseDTO = new TakenQuizResponseDTO();
@@ -125,31 +138,140 @@ public class TakenQuizService {
         takenQuizResponseDTO.setSectionTitle(foundSection.getTitle());
         takenQuizResponseDTO.setQuizTitle(foundQuiz.getQuizName());
         takenQuizResponseDTO.setDurationQuiz(foundQuiz.getDuration());
-        takenQuizResponseDTO.setEndDateQuiz(foundQuiz.getDeadline());
+        takenQuizResponseDTO.setEndDateQuiz(foundQuiz.getDeadline().getTime());
         takenQuizResponseDTO.setDetailsQuiz(foundQuiz.getDescription());
 
         TakenQuiz foundTakenQuiz = null;
 
-        for (TakenQuiz e: foundUser.getTakenQuizzes()) {
-            if (e.getQuiz().getId() == foundQuiz.getId()){
+        for (TakenQuiz e : foundUser.getTakenQuizzes()) {
+            if (e.getQuiz().getId() == foundQuiz.getId()) {
                 foundTakenQuiz = e;
-                takenQuizResponseDTO.setSubmittedDate(e.getSubmittedDate());
+                takenQuizResponseDTO.setSubmittedDate(e.getSubmittedDate().getTime());
                 takenQuizResponseDTO.setQuizMark(e.getGrade());
                 break;
             }
         }
 
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
         Date currentDate = new Date(System.currentTimeMillis());
         System.out.println(formatter.format(currentDate));
 
 
-        if (foundQuiz.getDeadline().compareTo(currentDate) > 0){
+        if (foundQuiz.getDeadline().compareTo(currentDate) > 0) {
             takenQuizResponseDTO.setIsQuizEnded(0);
-        }else {
+        } else {
             takenQuizResponseDTO.setIsQuizEnded(1);
         }
 
         return new ResponseEntity<>(takenQuizResponseDTO, HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity getStartDateTime(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+
+        Quiz foundQuiz = null;
+        User foundUser = null;
+
+        try {
+            foundUser = userRepository.findById(userId).get();
+        } catch (Exception e) {
+            throw new WrongTokenException();
+        }
+
+        try {
+            foundQuiz = quizRepository.findById(quizId).get();
+        } catch (Exception e) {
+            throw new QuizNotFoundException();
+        }
+
+        if (foundUser == null) {
+            return new ResponseEntity<>("Utilizatorul nu poate fi identificat", HttpStatus.BAD_REQUEST);
+        }
+
+        if (foundQuiz == null || foundQuiz.getIsVisible() == false) {
+            return new ResponseEntity<>("Quiz-ul nu exista sau nu este activ!", HttpStatus.BAD_REQUEST);
+        }
+
+        for (TakenQuiz e : foundUser.getTakenQuizzes()) {
+            if (e.getQuiz().getId() == foundQuiz.getId()) {
+                return new ResponseEntity<>(e.getStartDateTime().getTime(), HttpStatus.OK);
+            }
+        }
+
+        TakenQuiz takenQuiz = new TakenQuiz();
+        takenQuiz.setStartDateTime(new Date(System.currentTimeMillis()));
+        takenQuiz.setQuiz(foundQuiz);
+
+        foundUser.addTakenQuiz(takenQuiz);
+        userRepository.save(foundUser);
+
+        return new ResponseEntity<>(takenQuiz.getStartDateTime().getTime(), HttpStatus.OK);
+    }
+
+    public ResponseEntity getAnswersResponseDTO(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+        Quiz foundQuiz = null;
+        User foundUser = null;
+
+        try {
+            foundUser = userRepository.findById(userId).get();
+        } catch (Exception e) {
+            throw new WrongTokenException();
+        }
+
+        try {
+            foundQuiz = quizRepository.findById(quizId).get();
+        } catch (Exception e) {
+            throw new QuizNotFoundException();
+        }
+
+        if (foundUser == null) {
+            return new ResponseEntity<>("Utilizatorul nu poate fi identificat", HttpStatus.BAD_REQUEST);
+        }
+
+        if (foundQuiz == null || foundQuiz.getIsVisible() == false) {
+            return new ResponseEntity<>("Quiz-ul nu exista sau nu este activ!", HttpStatus.BAD_REQUEST);
+        }
+
+        TakenQuiz foundTakenQuiz = null;
+
+        for (TakenQuiz e : foundUser.getTakenQuizzes()) {
+            if (e.getQuiz().getId() == foundQuiz.getId()) {
+                foundTakenQuiz = e;
+            }
+        }
+
+        if (foundTakenQuiz == null) {
+            return new ResponseEntity<>("Utilizatorul nu a dat acest quiz!", HttpStatus.BAD_REQUEST);
+        }
+
+        List<QuestionResponseDTO> questionResponseDTOList = new ArrayList<>();
+
+        for (Question question : foundTakenQuiz.getQuiz().getQuestions()) {
+          QuestionResponseDTO questionResponseDTO = new QuestionResponseDTO(question.getContentQuestion());
+
+            Set<AnswerResponseDTO> answerResponseDTOList = new HashSet<>();
+            for (Answer answer : question.getAnswers()){
+                answerResponseDTOList.add(new AnswerResponseDTO(answer.getId(), answer.getAnswerContent(),answer.isValidation()));
+            }
+
+            GivenAnswer foundGivenAnswerForThisQuestion = null;
+            for (GivenAnswer givenAnswer : foundTakenQuiz.getGivenAnswers()){
+                if (givenAnswer.getId_question() == question.getId()){
+                    foundGivenAnswerForThisQuestion = givenAnswer;
+                }
+            }
+
+            for (AnswerResponseDTO answerResponseDTO : answerResponseDTOList){
+                if (answerResponseDTO.getAnswerId() == foundGivenAnswerForThisQuestion.getId_answer()){
+                    answerResponseDTO.setUserAnswer(true);
+                }
+            }
+
+            questionResponseDTO.setAnswers(answerResponseDTOList);
+            questionResponseDTOList.add(questionResponseDTO);
+
+        }
+
+        return new ResponseEntity<>(questionResponseDTOList, HttpStatus.OK);
+
     }
 }

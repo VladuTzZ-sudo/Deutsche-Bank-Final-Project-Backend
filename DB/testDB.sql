@@ -32,7 +32,7 @@ CREATE TABLE `answers` (
   PRIMARY KEY (`id`),
   KEY `FKa7obhh0b56p70kf3x0jsfdhog` (`id_question`),
   CONSTRAINT `FKa7obhh0b56p70kf3x0jsfdhog` FOREIGN KEY (`id_question`) REFERENCES `questions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `answers` (
 
 LOCK TABLES `answers` WRITE;
 /*!40000 ALTER TABLE `answers` DISABLE KEYS */;
-INSERT INTO `answers` VALUES (1,'= 9',_binary '\0',1),(2,'= 10',_binary '',1),(3,'= 11',_binary '\0',1),(4,'a language',_binary '',2),(5,'a dialect',_binary '\0',2),(6,'a programming language',_binary '\0',2),(7,'= 2',_binary '',3),(8,'= 3',_binary '\0',3),(9,'= 4',_binary '\0',3),(10,'= 2',_binary '\0',4),(11,'= 4',_binary '\0',4),(12,'= 3',_binary '',4),(13,'= 2',_binary '\0',5),(14,'= 3',_binary '\0',5),(15,'= 4',_binary '',5);
+INSERT INTO `answers` VALUES (1,'= 2',_binary '',1),(2,'= 3',_binary '\0',1),(3,'= 4',_binary '\0',1),(4,'= 2',_binary '\0',2),(5,'= 4',_binary '\0',2),(6,'= 3',_binary '',2),(7,'= 2',_binary '\0',3),(8,'= 3',_binary '\0',3),(9,'= 4',_binary '',3),(10,'A language.',_binary '\0',4),(11,'A word.',_binary '',4);
 /*!40000 ALTER TABLE `answers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,7 +67,7 @@ CREATE TABLE `courses` (
 
 LOCK TABLES `courses` WRITE;
 /*!40000 ALTER TABLE `courses` DISABLE KEYS */;
-INSERT INTO `courses` VALUES (1,'Algebra','Math course','Mike'),(2,'English','Language Course','Mike');
+INSERT INTO `courses` VALUES (1,'Algebra','Math Course','Mike'),(2,'English','Language Course','Mike');
 /*!40000 ALTER TABLE `courses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,6 +81,7 @@ DROP TABLE IF EXISTS `given_answers`;
 CREATE TABLE `given_answers` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_answer` int NOT NULL,
+  `id_question` int NOT NULL,
   `taken_quiz_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKmhu8njf63im5kqu1259saqflt` (`taken_quiz_id`),
@@ -94,7 +95,7 @@ CREATE TABLE `given_answers` (
 
 LOCK TABLES `given_answers` WRITE;
 /*!40000 ALTER TABLE `given_answers` DISABLE KEYS */;
-INSERT INTO `given_answers` VALUES (1,7,1),(2,12,1),(3,13,1);
+INSERT INTO `given_answers` VALUES (1,9,3,1),(2,1,1,1),(3,5,2,1);
 /*!40000 ALTER TABLE `given_answers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -112,7 +113,7 @@ CREATE TABLE `questions` (
   PRIMARY KEY (`id`),
   KEY `FKevbiobobyiwgpro3ogd3tumk5` (`id_quiz`),
   CONSTRAINT `FKevbiobobyiwgpro3ogd3tumk5` FOREIGN KEY (`id_quiz`) REFERENCES `quizzes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +122,7 @@ CREATE TABLE `questions` (
 
 LOCK TABLES `questions` WRITE;
 /*!40000 ALTER TABLE `questions` DISABLE KEYS */;
-INSERT INTO `questions` VALUES (1,'What is 5 + 5 ?',1),(2,'What is the word English ?',2),(3,'What is 1 + 1?',3),(4,'What is 1 + 2?',3),(5,'What is 2 + 2?',3);
+INSERT INTO `questions` VALUES (1,'What is 1 + 1?',1),(2,'What is 1 + 2?',1),(3,'What is 2 + 2?',1),(4,'What is English?',2);
 /*!40000 ALTER TABLE `questions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +141,7 @@ CREATE TABLE `quizzes` (
   `is_visible` bit(1) DEFAULT NULL,
   `quiz_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,7 +150,7 @@ CREATE TABLE `quizzes` (
 
 LOCK TABLES `quizzes` WRITE;
 /*!40000 ALTER TABLE `quizzes` DISABLE KEYS */;
-INSERT INTO `quizzes` VALUES (1,'2022-02-28 02:00:00.000000','Algebra',60,_binary '\0','Easy math quiz'),(2,'2022-02-28 02:00:00.000000','English',60,_binary '','Easy language quiz'),(3,'2022-06-28 00:00:00.000000','Algebra',60,_binary '','Super easy math test');
+INSERT INTO `quizzes` VALUES (1,'2022-07-01 23:59:59.000000','Algebra',10,_binary '','Super easy math test'),(2,'2022-07-01 23:59:59.000000','English',25,_binary '\0','Easy Language quiz');
 /*!40000 ALTER TABLE `quizzes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +195,7 @@ CREATE TABLE `sections` (
   KEY `FK7ty9cevpq04d90ohtso1q8312` (`course_id`),
   CONSTRAINT `FK7ty9cevpq04d90ohtso1q8312` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`),
   CONSTRAINT `FKtlxxk00psgcjxhmdco5yfyf7c` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +204,7 @@ CREATE TABLE `sections` (
 
 LOCK TABLES `sections` WRITE;
 /*!40000 ALTER TABLE `sections` DISABLE KEYS */;
-INSERT INTO `sections` VALUES (1,'First Math Course Section',NULL,1),(2,'Second Math Course Section',3,1),(3,'Third Math Course Section',1,1),(4,'First Language Course Section',NULL,2),(5,'Second Language Course Section',NULL,2),(6,'Third Language Course Section',NULL,2),(7,'Fourth Language Course Section',2,2);
+INSERT INTO `sections` VALUES (1,'First Math Course Section',1,1),(2,'Second Math Course Section',NULL,1),(3,'Third Math Course Section',NULL,1),(4,'FIrst Language Course Section',2,2),(5,'Second Language Course Section',NULL,2);
 /*!40000 ALTER TABLE `sections` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -217,7 +218,8 @@ DROP TABLE IF EXISTS `taken_quizzes`;
 CREATE TABLE `taken_quizzes` (
   `id` int NOT NULL AUTO_INCREMENT,
   `grade` float NOT NULL,
-  `submitted_date` date DEFAULT NULL,
+  `start_date_time` datetime(6) DEFAULT NULL,
+  `submitted_date` datetime(6) DEFAULT NULL,
   `quiz_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -234,7 +236,7 @@ CREATE TABLE `taken_quizzes` (
 
 LOCK TABLES `taken_quizzes` WRITE;
 /*!40000 ALTER TABLE `taken_quizzes` DISABLE KEYS */;
-INSERT INTO `taken_quizzes` VALUES (1,66,'2022-06-27',3,1);
+INSERT INTO `taken_quizzes` VALUES (1,66,'2022-06-29 16:36:26.839000','2022-06-29 16:37:03.357000',1,1);
 /*!40000 ALTER TABLE `taken_quizzes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -289,7 +291,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,_binary '','jack@gmail.com','Jack','$2a$10$fnxEgz08ZLeWwKSJTaOKveFfUH5/6fsAy/itdZdd2fXp6wm.ccYEi','Black',1),(2,_binary '','mike@gmail.com','Mike','$2a$10$F0VAhaufD1b34OmceEYP/.S2guLztlMAQxt32Rtm5z8hJL294eBV.','Tison',2);
+INSERT INTO `users` VALUES (1,_binary '','jack@gmail.com','Jack','$2a$10$wJnaldNn2GWJ6qh4rR1aJ.N7qfIIwEEgkxdeTGUfHOrjpEzEzyHLm','Black',1),(2,_binary '','mike@gmail.com','Mike','$2a$10$xlnr8GJ8LZy.jwsBMp.BtOGXjXTJTf4BIgGQmh4JtExPrC/17vHj6','Tison',2);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -316,7 +318,7 @@ CREATE TABLE `users_user_courses` (
 
 LOCK TABLES `users_user_courses` WRITE;
 /*!40000 ALTER TABLE `users_user_courses` DISABLE KEYS */;
-INSERT INTO `users_user_courses` VALUES (2,1),(2,1),(2,2),(2,2);
+INSERT INTO `users_user_courses` VALUES (2,1),(2,2);
 /*!40000 ALTER TABLE `users_user_courses` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -329,4 +331,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-28 11:11:23
+-- Dump completed on 2022-06-29 16:48:20

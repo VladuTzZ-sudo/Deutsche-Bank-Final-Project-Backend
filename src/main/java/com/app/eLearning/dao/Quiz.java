@@ -26,7 +26,6 @@ public class Quiz {
     @Column(name = "is_visible")
     private Boolean isVisible = false;
 
-    @Temporal(TemporalType.DATE)
     private Date deadline;
 
     private int duration;

@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseSectionDTO {
-    private int id;
-    private String title;
-    private String description;
-    private ResponseQuizDTO quiz;
+public class GivenAnswersDTO {
+    private int answerId;
+    private int questionId;
 }

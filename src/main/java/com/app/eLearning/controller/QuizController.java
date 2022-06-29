@@ -1,6 +1,5 @@
 package com.app.eLearning.controller;
 
-import com.app.eLearning.dao.Question;
 import com.app.eLearning.dao.Quiz;
 import com.app.eLearning.dto.QuizDTO;
 import com.app.eLearning.exceptions.*;
@@ -14,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Set;
-
 @CrossOrigin
 @Controller
 public class QuizController
@@ -29,8 +25,8 @@ public class QuizController
 	UserService userService;
 
 	@GetMapping("/courses/{courseId}/sections/{sectionId}/quizPlay")
-	public ResponseEntity<Set<Question>> getQuestionsAndAnswers(@PathVariable(name = "courseId") int courseId, @PathVariable(name = "sectionId") int sectionId,
-	                                                            @RequestHeader("Authorization") String authHeader) throws WrongTokenException, SectionNotFoundException, QuizNotFoundException
+	public ResponseEntity getQuestionsAndAnswers(@PathVariable(name = "courseId") int courseId, @PathVariable(name = "sectionId") int sectionId,
+	                                             @RequestHeader("Authorization") String authHeader) throws WrongTokenException, SectionNotFoundException, QuizNotFoundException
 	{
 		Pair<Integer, String> loginAuth = null;
 
@@ -38,7 +34,7 @@ public class QuizController
 
 		if (!userService.checkIfUserExists(loginAuth.getFirst()))
 		{
-			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("The user id you provided is not valid!", HttpStatus.UNAUTHORIZED);
 		}
 
 		if (sectionId > 0)
@@ -47,7 +43,7 @@ public class QuizController
 		}
 		else
 		{
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("The section id you provided is not valid!", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -95,7 +91,7 @@ public class QuizController
 		}
 		else
 		{
-			return new ResponseEntity("Section id cannot be negatie or zero!", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity("Section id cannot be negative or zero!", HttpStatus.BAD_REQUEST);
 		}
 	}
 

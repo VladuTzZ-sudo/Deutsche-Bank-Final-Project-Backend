@@ -20,7 +20,10 @@ public class GivenAnswer
 	// id-ul raspunsului din baza de date
 	private int id_answer;
 
-	public GivenAnswer(int id_answer) {
+	private int id_question;
+
+	public GivenAnswer(int id_answer, int id_question) {
 		this.id_answer = id_answer;
+		this.id_question = id_question;
 	}
 }
