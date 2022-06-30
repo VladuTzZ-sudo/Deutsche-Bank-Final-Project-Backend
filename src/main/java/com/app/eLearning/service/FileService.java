@@ -1,6 +1,7 @@
 package com.app.eLearning.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -8,9 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FileService
@@ -44,19 +48,44 @@ public class FileService
 		}
 	}
 
-	public void deleteAll()
-	{
-
-	}
-
 	public ResponseEntity getAllFiles()
 	{
-		return null;
+		List<String> fileNames = new ArrayList<>();
+		try
+		{
+			Files.walk(rootPath, 1)
+					.filter(path -> !path.equals(rootPath))
+					.forEach(path -> fileNames.add(path.getFileName()
+							.toString()));
+			return new ResponseEntity(fileNames, HttpStatus.OK);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return new ResponseEntity("Could not load the files!", HttpStatus.BAD_REQUEST);
+		}
 	}
 
-
-	public ResponseEntity getFile()
+	public Resource getFile(String fileName)
 	{
-		return null;
+		try
+		{
+			Path file = rootPath.resolve(fileName);
+			Resource resource = new UrlResource(file.toUri());
+			if (resource.exists() || resource.isReadable())
+			{
+				return resource;
+			}
+			else
+			{
+				throw new RuntimeException("Could not read the file!");
+			}
+		}
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 }
