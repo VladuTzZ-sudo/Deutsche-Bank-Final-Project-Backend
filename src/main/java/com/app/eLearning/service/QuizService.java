@@ -181,4 +181,31 @@ public class QuizService {
     }
 
 
+	public ResponseEntity getQuizFromSection(int sectionId) throws SectionNotFoundException, QuizNotFoundException {
+
+		Section foundSection = null;
+
+		try
+		{
+			foundSection = sectionRepository.findFirstById(sectionId);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SectionNotFoundException();
+		}
+		if (foundSection == null)
+		{
+			throw new SectionNotFoundException();
+		}
+
+
+		if (foundSection.getQuiz() != null)
+		{
+			return new ResponseEntity<>(foundSection.getQuiz(), HttpStatus.OK);
+		}
+		else
+			throw new QuizNotFoundException();
+
+	}
 }

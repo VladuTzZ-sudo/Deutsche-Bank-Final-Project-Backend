@@ -93,4 +93,23 @@ public class QuizController
         }
     }
 
+	@GetMapping("/sections/{id}/quiz")
+	public ResponseEntity getQuizFromSection(@PathVariable(name = "id")int sectionId, @RequestHeader ("Authorization") String authHeader) throws WrongTokenException, SectionNotFoundException, QuizNotFoundException {
+		Pair<Integer, String> loginAuth = null;
+
+		loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+
+		if (!loginAuth.getSecond().equals("teacher"))
+		{
+			return new ResponseEntity<>("You are not authorized to view a quiz and its answers!", HttpStatus.UNAUTHORIZED);
+		}
+
+		if (sectionId > 0){
+			return quizService.getQuizFromSection(sectionId);
+		}else {
+			return new ResponseEntity("Section id cannot be negatice or zero!", HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }
