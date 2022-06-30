@@ -12,4 +12,5 @@ public class ResponseQuizDTO {
     private String quizName;
     private String description;
     private Boolean isVisible;
+    private Boolean isEnded;
 }

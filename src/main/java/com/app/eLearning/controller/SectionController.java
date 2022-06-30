@@ -60,7 +60,7 @@ public class SectionController {
         }
 
         if (courseId > 0) {
-            return sectionService.getSectionsForCourse(courseId, loginAuth.getSecond());
+            return sectionService.getSectionsForCourse(courseId, loginAuth.getSecond(), loginAuth.getFirst());
         } else {
             return null;
         }
