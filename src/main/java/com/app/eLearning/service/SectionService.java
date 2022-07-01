@@ -1,26 +1,24 @@
 package com.app.eLearning.service;
 
-import com.app.eLearning.dao.Course;
-import com.app.eLearning.dao.Section;
-import com.app.eLearning.dao.TakenQuiz;
-import com.app.eLearning.dao.User;
+import com.app.eLearning.dao.*;
+import com.app.eLearning.dto.FileDTO;
 import com.app.eLearning.dto.ResponseQuizDTO;
 import com.app.eLearning.dto.ResponseSectionDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.QuizNotFoundException;
 import com.app.eLearning.exceptions.SectionNotFoundException;
 import com.app.eLearning.exceptions.WrongTokenException;
-import com.app.eLearning.repository.CourseRepository;
-import com.app.eLearning.repository.SectionRepository;
-import com.app.eLearning.repository.TakenQuizRepository;
-import com.app.eLearning.repository.UserRepository;
+import com.app.eLearning.repository.*;
+import org.apache.catalina.webresources.FileResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SectionService
@@ -38,7 +36,11 @@ public class SectionService
 	@Autowired
 	UserRepository userRepository;
 
-	public ResponseEntity<String> postSection(Section section, int courseID) throws WrongTokenException {
+	@Autowired
+	FileRepository fileRepository;
+
+	public ResponseEntity<String> postSection(Section section, int courseID) throws WrongTokenException
+	{
 
 		Course foundCourse = null;
 
@@ -64,18 +66,24 @@ public class SectionService
 		}
 	}
 
-	public List<ResponseSectionDTO> getSectionsForCourse(int courseId, String role,int userId) throws CourseNotFoundException, WrongTokenException {
+	public List<ResponseSectionDTO> getSectionsForCourse(int courseId, String role, int userId) throws CourseNotFoundException, WrongTokenException
+	{
 		Course foundCourse = null;
 		User foundUser = null;
+		List<File> files = null;
 		List<ResponseSectionDTO> sectionListDTO = new ArrayList<>();
 
-		try{
+		try
+		{
 			foundUser = userRepository.findById(userId).get();
-		}catch (Exception e){
+		}
+		catch (Exception e)
+		{
 			throw new WrongTokenException();
 		}
 
-		if (foundUser == null){
+		if (foundUser == null)
+		{
 			throw new WrongTokenException();
 		}
 
@@ -93,26 +101,54 @@ public class SectionService
 			throw new CourseNotFoundException();
 		}
 
+		try
+		{
+			files = fileRepository.findByCourseId(courseId);
+		}
+		catch (Exception e)
+		{
+			// throw new files not found exception
+			e.printStackTrace();
+		}
+
+		Map<Integer, List<FileDTO>> sectionFiles = new HashMap<>();
+
+		for (Section s : foundCourse.getCourseSections())
+		{
+			sectionFiles.put(s.getId(), new ArrayList<>());
+			for (File f : files)
+			{
+				if (s.getId() == f.getSectionId())
+				{
+					sectionFiles.get(s.getId()).add(new FileDTO(f.getName(), f.getDate()));
+				}
+			}
+		}
+
 		if (role.equals("teacher"))
 		{
 			for (Section s : foundCourse.getCourseSections())
 			{
+
 				if (s.getQuiz() == null)
 				{
-					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null));
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null, sectionFiles.get(s.getId())));
 				}
 				else
 				{
 					boolean isQuizEnded = false;
-					for (TakenQuiz takenQuiz : foundUser.getTakenQuizzes()){
-						if (takenQuiz.getQuiz().getId() == s.getQuiz().getId()){
-							if (takenQuiz.getGivenAnswers().size() > 0){
+					for (TakenQuiz takenQuiz : foundUser.getTakenQuizzes())
+					{
+						if (takenQuiz.getQuiz().getId() == s.getQuiz().getId())
+						{
+							if (takenQuiz.getGivenAnswers().size() > 0)
+							{
 								isQuizEnded = true;
 							}
 						}
 					}
 
-					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible(), isQuizEnded)));
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible(), isQuizEnded), sectionFiles.get(s.getId())));
 				}
 			}
 			return sectionListDTO;
@@ -123,23 +159,26 @@ public class SectionService
 			{
 				if (s.getQuiz() == null)
 				{
-					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null));
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null, sectionFiles.get(s.getId())));
 				}
 				else if (s.getQuiz().getIsVisible())
 				{
 					boolean isQuizEnded = false;
-					for (TakenQuiz takenQuiz : foundUser.getTakenQuizzes()){
-						if (takenQuiz.getQuiz().getId() == s.getQuiz().getId()){
-							if (takenQuiz.getGivenAnswers().size() > 0){
+					for (TakenQuiz takenQuiz : foundUser.getTakenQuizzes())
+					{
+						if (takenQuiz.getQuiz().getId() == s.getQuiz().getId())
+						{
+							if (takenQuiz.getGivenAnswers().size() > 0)
+							{
 								isQuizEnded = true;
 							}
 						}
 					}
-					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible(), isQuizEnded)));
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible(), isQuizEnded), sectionFiles.get(s.getId())));
 				}
 				else if (!s.getQuiz().getIsVisible())
 				{
-					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null));
+					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), null, sectionFiles.get(s.getId())));
 				}
 			}
 			return sectionListDTO;
