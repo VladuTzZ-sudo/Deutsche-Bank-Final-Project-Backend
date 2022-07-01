@@ -182,7 +182,7 @@ public class TakenQuizService {
             takenQuizResponseDTO.setIsQuizEnded(1);
         }
 
-        return new ResponseEntity<>(takenQuizResponseDTO, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(takenQuizResponseDTO, HttpStatus.OK);
     }
 
     public ResponseEntity getStartDateTime(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
