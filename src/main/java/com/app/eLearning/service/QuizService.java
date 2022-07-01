@@ -17,11 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import java.util.Date;
+import java.util.*;
 
 @Service
 public class QuizService {
@@ -141,7 +137,10 @@ public class QuizService {
 			throw new QuizNotFoundException();
 	}
 
-    public ResponseEntity<String> postQuiz(int sectionId, ReceivedQuizDTO receivedQuizDTO) throws SectionNotFoundException {
+    public ResponseEntity<String> postQuiz(int sectionId, AdaptedReceivedQuizDTO adaptedReceivedQuizDTO) throws SectionNotFoundException {
+		//converting AdaptedReceivedQuizDTO to ReceivedQuizDTO
+		ReceivedQuizDTO receivedQuizDTO = AdaptingReceivedQuizDTO(adaptedReceivedQuizDTO);
+
 
         //check if QuizContentDTO has null values
         if (receivedQuizDTO.getQuizName() == null || receivedQuizDTO.getDescription() == null ||
@@ -180,6 +179,39 @@ public class QuizService {
         }
 
     }
+
+	private ReceivedQuizDTO AdaptingReceivedQuizDTO(AdaptedReceivedQuizDTO adaptedReceivedQuizDTO){
+		ReceivedQuizDTO receivedQuizDTO = new ReceivedQuizDTO();
+		receivedQuizDTO.setQuizName(adaptedReceivedQuizDTO.getQuizzTitle());
+		receivedQuizDTO.setDescription(adaptedReceivedQuizDTO.getDetails());
+		receivedQuizDTO.setIsVisible(false);
+		receivedQuizDTO.setDeadline(adaptedReceivedQuizDTO.getDue());
+		receivedQuizDTO.setDuration(adaptedReceivedQuizDTO.getDuration());
+		//set questions
+		Set<Question> questionList = new HashSet<>();
+		for (AdaptedQuestionsDTO e : adaptedReceivedQuizDTO.getQuestions()){
+			Set<Answer> answerList = new HashSet<>();
+			for (AdaptedAnswersDTO adaptedAnswersDTO : e.getAnswers()){
+				Answer answer = new Answer();
+				answer.setAnswerContent(adaptedAnswersDTO.getAnswerText());
+				if (adaptedAnswersDTO.getAnswerValue().equals("true")){
+					answer.setValidation(true);
+				}else{
+					answer.setValidation(false);
+				}
+				answerList.add(answer);
+			}
+			Question question = new Question();
+			question.setContentQuestion(e.getQuestionText());
+			question.setAnswers(answerList);
+
+			questionList.add(question);
+		}
+
+		receivedQuizDTO.setQuestions(questionList);
+
+		return receivedQuizDTO;
+	}
 
 
 	public ResponseEntity getQuizFromSection(int sectionId) throws SectionNotFoundException, QuizNotFoundException {
