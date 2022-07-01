@@ -4,6 +4,7 @@ import com.app.eLearning.dao.Quiz;
 import com.app.eLearning.dao.ReceivedQuizDTO;
 import com.app.eLearning.dao.Section;
 import com.app.eLearning.dao.*;
+import com.app.eLearning.dto.QuizAndAnswersDTO;
 import com.app.eLearning.dto.QuizDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.exceptions.QuizNotFoundException;
@@ -202,7 +203,17 @@ public class QuizService {
 
 		if (foundSection.getQuiz() != null)
 		{
-			return new ResponseEntity<>(foundSection.getQuiz(), HttpStatus.OK);
+			QuizAndAnswersDTO quizAndAnswersDTO = new QuizAndAnswersDTO();
+
+			quizAndAnswersDTO.setId(foundSection.getQuiz().getId());
+			quizAndAnswersDTO.setQuizName(foundSection.getQuiz().getQuizName());
+			quizAndAnswersDTO.setDescription(foundSection.getQuiz().getDescription());
+			quizAndAnswersDTO.setIsVisible(foundSection.getQuiz().getIsVisible());
+			quizAndAnswersDTO.setDeadline(foundSection.getQuiz().getDeadline().getTime());
+			quizAndAnswersDTO.setDuration(foundSection.getQuiz().getDuration());
+			quizAndAnswersDTO.setQuestions(foundSection.getQuiz().getQuestions());
+			
+			return new ResponseEntity<>(quizAndAnswersDTO, HttpStatus.OK);
 		}
 		else
 			throw new QuizNotFoundException();
