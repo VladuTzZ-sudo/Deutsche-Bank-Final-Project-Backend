@@ -12,11 +12,15 @@ import com.app.eLearning.exceptions.SectionNotFoundException;
 import com.app.eLearning.repository.CourseRepository;
 import com.app.eLearning.repository.QuizRepository;
 import com.app.eLearning.repository.SectionRepository;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -185,7 +189,13 @@ public class QuizService {
 		receivedQuizDTO.setQuizName(adaptedReceivedQuizDTO.getQuizzTitle());
 		receivedQuizDTO.setDescription(adaptedReceivedQuizDTO.getDetails());
 		receivedQuizDTO.setIsVisible(false);
-		receivedQuizDTO.setDeadline(adaptedReceivedQuizDTO.getDue());
+
+		LocalDateTime ldt = LocalDateTime.parse(adaptedReceivedQuizDTO.getDue());
+		ZonedDateTime zdt = ldt.atZone(ZoneId.of("Europe/Bucharest"));
+
+		receivedQuizDTO.setDeadline(zdt.toInstant().toEpochMilli());
+
+
 		receivedQuizDTO.setDuration(adaptedReceivedQuizDTO.getDuration());
 		//set questions
 		Set<Question> questionList = new HashSet<>();

@@ -11,7 +11,7 @@ import java.util.Set;
 public class AdaptedReceivedQuizDTO {
     private String quizzTitle;
     private String details;
-    private Long due;
+    private String due;
     private int duration;
     private Set<AdaptedQuestionsDTO> questions;
 }
