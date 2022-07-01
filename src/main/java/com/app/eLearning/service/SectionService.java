@@ -15,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SectionService
@@ -148,6 +145,11 @@ public class SectionService
 						}
 					}
 
+					Date currentDate = new Date(System.currentTimeMillis());
+					if (s.getQuiz().getDeadline().compareTo(currentDate) < 0) {
+						isQuizEnded = true;
+					}
+
 					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible(), isQuizEnded), sectionFiles.get(s.getId())));
 				}
 			}
@@ -174,6 +176,12 @@ public class SectionService
 							}
 						}
 					}
+
+					Date currentDate = new Date(System.currentTimeMillis());
+					if (s.getQuiz().getDeadline().compareTo(currentDate) < 0) {
+						isQuizEnded = true;
+					}
+
 					sectionListDTO.add(new ResponseSectionDTO(s.getId(), s.getTitle(), s.getDescription(), new ResponseQuizDTO(s.getQuiz().getId(), s.getQuiz().getQuizName(), s.getQuiz().getDescription(), s.getQuiz().getIsVisible(), isQuizEnded), sectionFiles.get(s.getId())));
 				}
 				else if (!s.getQuiz().getIsVisible())
