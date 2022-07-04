@@ -256,9 +256,23 @@ public class TakenQuizService {
         return new ResponseEntity<>(takenQuiz.getStartDateTime().getTime(), HttpStatus.OK);
     }
 
-    public ResponseEntity getAnswersResponseDTO(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity getAnswersResponseDTO(Integer userId, int sectionId) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
         Quiz foundQuiz = null;
         User foundUser = null;
+        Section foundSection = null;
+        int quizId;
+
+        try {
+            foundSection = sectionRepository.findById(sectionId).get();
+        }catch (Exception e){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection == null){
+            throw new SectionIdNotFound();
+        }
+
+        quizId = foundSection.getQuiz().getId();
 
         try {
             foundUser = userRepository.findById(userId).get();
