@@ -4,6 +4,7 @@ import com.app.eLearning.dao.Course;
 import com.app.eLearning.dao.Section;
 import com.app.eLearning.dao.TakenQuiz;
 import com.app.eLearning.dto.PopularCourseDTO;
+import com.app.eLearning.dto.SectionAverageGradeDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
 import com.app.eLearning.repository.CourseRepository;
 import com.app.eLearning.repository.SectionRepository;
@@ -60,13 +61,12 @@ public class StatisticsService {
         }
 
 
-
         for (Course c : courseList) {
-            List<Section> sectionList =  c.getCourseSections();
+            List<Section> sectionList = c.getCourseSections();
             List<Integer> allQuizzIdsForACourse = new ArrayList<>();
 
-            for (Section s : sectionList){
-                if (s.getQuiz() != null){
+            for (Section s : sectionList) {
+                if (s.getQuiz() != null) {
                     allQuizzIdsForACourse.add(s.getQuiz().getId());
                 }
             }
@@ -74,12 +74,12 @@ public class StatisticsService {
             PopularCourseDTO popularCourseDTO = new PopularCourseDTO();
             popularCourseDTO.setCourseName(c.getName());
 
-            for (TakenQuiz takenQuiz : takenQuizList){
+            for (TakenQuiz takenQuiz : takenQuizList) {
 //                if (allQuizzIdsForACourse.contains(takenQuiz.getQuiz().getId())){
 //                    popularCourseDTO.increaseCoursePopulairty();
 //                }
-                for (int quizId: allQuizzIdsForACourse){
-                    if (quizId == takenQuiz.getQuiz().getId()){
+                for (int quizId : allQuizzIdsForACourse) {
+                    if (quizId == takenQuiz.getQuiz().getId()) {
                         popularCourseDTO.increaseCoursePopulairty();
                     }
                 }
@@ -90,6 +90,46 @@ public class StatisticsService {
         }
 
         return new ResponseEntity(popularCourseDTOList, HttpStatus.OK);
+
+    }
+
+    public ResponseEntity getListOfSectionAverageGrade(int courseId) throws CourseNotFoundException {
+
+        Course foundCourse = null;
+        List<TakenQuiz> takenQuizList = takenQuizRepository.findAll();
+        List<SectionAverageGradeDTO> sectionAverageGradeDTOList = new ArrayList<>();
+
+        try {
+            foundCourse = courseRepository.findById(courseId).get();
+        } catch (Exception e) {
+            throw new CourseNotFoundException();
+        }
+
+
+        for (Section s : foundCourse.getCourseSections()) {
+            float sum = 0;
+            int count = 0;
+            if (s.getQuiz() != null) {
+                for (TakenQuiz takenQuiz : takenQuizList) {
+                    if (s.getQuiz().getId() == takenQuiz.getQuiz().getId()) {
+                        sum += takenQuiz.getGrade();
+                        count++;
+                    }
+                }
+            }
+
+            SectionAverageGradeDTO sectionAverageGradeDTO = new SectionAverageGradeDTO();
+            if (count != 0){
+                sectionAverageGradeDTO.setAverageGrade(sum/count);
+            }
+            sectionAverageGradeDTO.setSectionName(s.getTitle());
+
+        sectionAverageGradeDTOList.add(sectionAverageGradeDTO);
+        }
+
+
+        return new ResponseEntity(sectionAverageGradeDTOList, HttpStatus.OK);
+
 
     }
 }

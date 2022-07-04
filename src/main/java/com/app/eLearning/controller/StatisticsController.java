@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @CrossOrigin
@@ -29,11 +30,31 @@ public class StatisticsController {
 
         if (!loginAuth.getSecond().equals("teacher"))
         {
-            return new ResponseEntity<>("You are not authorized view statistics!", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("You are not authorized to view statistics!", HttpStatus.UNAUTHORIZED);
         }
 
         return statisticsService.getListofPopularCourseDTO();
 
+
+    }
+
+    @GetMapping("statistics/courses/{id}/averageGrade")
+    public ResponseEntity getListOfAverageGradePerSection(@RequestHeader("Authorization") String authHeader, @PathVariable(name = "id")int courseId) throws WrongTokenException, CourseNotFoundException {
+
+        Pair<Integer, String> loginAuth = null;
+
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+        if (!loginAuth.getSecond().equals("teacher"))
+        {
+            return new ResponseEntity<>("You are not authorized to view statistics!", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (courseId <= 0){
+            return new ResponseEntity<>("Course id cannot be negative or zero!", HttpStatus.BAD_REQUEST);
+        }
+
+        return statisticsService.getListOfSectionAverageGrade(courseId);
 
     }
 
