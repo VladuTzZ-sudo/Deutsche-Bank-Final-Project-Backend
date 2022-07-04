@@ -115,11 +115,12 @@ public class TakenQuizService {
         return new ResponseEntity<>("Answers recorded successfully!", HttpStatus.OK);
     }
 
-    public ResponseEntity getTakenQuiz(Integer userId, int courseId, int sectionId, int quizId) throws CourseNotFoundException, SectionIdNotFound, QuizNotFoundException, WrongTokenException {
+    public ResponseEntity getTakenQuiz(Integer userId, int courseId, int sectionId) throws CourseNotFoundException, SectionIdNotFound, QuizNotFoundException, WrongTokenException {
         User foundUser = null;
         Course foundCourse = null;
         Section foundSection = null;
         Quiz foundQuiz = null;
+        int quizId = 0;
 
         try {
             foundCourse = courseRepository.findById(courseId).get();
@@ -132,6 +133,11 @@ public class TakenQuizService {
         } catch (Exception e) {
             throw new SectionIdNotFound();
         }
+
+        if (foundSection.getQuiz() == null){
+            throw new QuizNotFoundException();
+        }
+        quizId = foundSection.getQuiz().getId();
 
         try {
             foundQuiz = quizRepository.findById(quizId).get();

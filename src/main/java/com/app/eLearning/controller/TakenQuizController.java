@@ -42,8 +42,8 @@ public class TakenQuizController {
 
     }
 
-    @GetMapping("/courses/{courseId}/sections/{sectionId}/quiz/{quizId}/takenQuiz")
-    public ResponseEntity getTakenQuiz(@PathVariable(name = "courseId")int courseId, @PathVariable(name = "sectionId")int sectionId, @PathVariable(name = "quizId")int quizId, @RequestHeader("Authorization") String authHeader) throws WrongTokenException, SectionIdNotFound, QuizNotFoundException, CourseNotFoundException {
+    @GetMapping("/courses/{courseId}/sections/{sectionId}/takenQuiz")
+    public ResponseEntity getTakenQuiz(@PathVariable(name = "courseId")int courseId, @PathVariable(name = "sectionId")int sectionId, @RequestHeader("Authorization") String authHeader) throws WrongTokenException, SectionIdNotFound, QuizNotFoundException, CourseNotFoundException {
 
         Pair<Integer, String> loginAuth = null;
 
@@ -54,12 +54,12 @@ public class TakenQuizController {
             return new ResponseEntity<>("Profesorii nu au dreptul la quiz summary", HttpStatus.UNAUTHORIZED);
         }
 
-        if (quizId <= 0 || courseId <=0 || sectionId <= 0){
+        if (courseId <=0 || sectionId <= 0){
             return new ResponseEntity<>("Path variables nu pot fi mai mici sau egale cu zero", HttpStatus.BAD_REQUEST);
         }
 
 
-        return takenQuizService.getTakenQuiz(loginAuth.getFirst(), courseId, sectionId, quizId);
+        return takenQuizService.getTakenQuiz(loginAuth.getFirst(), courseId, sectionId);
 
 
     }
