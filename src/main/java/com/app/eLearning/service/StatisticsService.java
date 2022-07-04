@@ -85,6 +85,7 @@ public class StatisticsService {
                 }
             }
 
+            popularCourseDTO.setCourseId(c.getId());
             popularCourseDTOList.add(popularCourseDTO);
         }
 

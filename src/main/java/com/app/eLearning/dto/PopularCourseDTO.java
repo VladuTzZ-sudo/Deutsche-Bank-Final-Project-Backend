@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PopularCourseDTO {
+    private int courseId;
+
     private String courseName;
     private int totalTakenQuizzes;
 
