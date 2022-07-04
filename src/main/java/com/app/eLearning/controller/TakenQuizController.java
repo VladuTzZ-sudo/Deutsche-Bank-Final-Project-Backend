@@ -21,8 +21,8 @@ public class TakenQuizController {
     @Autowired
     TakenQuizService takenQuizService;
 
-    @PostMapping("/quiz/{id}/takenQuiz")
-    public ResponseEntity<String> postTakenQuiz(@PathVariable(name = "id")int quizId, @RequestBody List<GivenAnswersDTO> givenAnswersDTOList, @RequestHeader("Authorization") String authHeader) throws WrongTokenException, QuizNotFoundException {
+    @PostMapping("/sections/{id}/takenQuiz")
+    public ResponseEntity<String> postTakenQuiz(@PathVariable(name = "id")int sectionId, @RequestBody List<GivenAnswersDTO> givenAnswersDTOList, @RequestHeader("Authorization") String authHeader) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
 
         Pair<Integer, String> loginAuth = null;
 
@@ -34,11 +34,11 @@ public class TakenQuizController {
             return new ResponseEntity<>("Teachers cannot take the quiz!", HttpStatus.UNAUTHORIZED);
         }
 
-        if (quizId <= 0){
-            return new ResponseEntity<>("QuizId cannot be negative or zero!", HttpStatus.BAD_REQUEST);
+        if (sectionId <= 0){
+            return new ResponseEntity<>("Section id cannot be negative or zero!", HttpStatus.BAD_REQUEST);
         }
 
-        return takenQuizService.postTakenQuiz(loginAuth.getFirst(), givenAnswersDTOList, quizId);
+        return takenQuizService.postTakenQuiz(loginAuth.getFirst(), givenAnswersDTOList, sectionId);
 
     }
 

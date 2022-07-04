@@ -36,11 +36,28 @@ public class TakenQuizService {
     @Autowired
     SectionRepository sectionRepository;
 
-    public ResponseEntity<String> postTakenQuiz(Integer userId, List<GivenAnswersDTO> givenAnswersDTOList, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity<String> postTakenQuiz(Integer userId, List<GivenAnswersDTO> givenAnswersDTOList, int sectionId) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
 
         User foundUser = userRepository.findById(userId).get();
         Quiz foundQuiz = null;
         int correctAnswerCounter = 0;
+
+        Section foundSection = null;
+        try{
+            foundSection = sectionRepository.findById(sectionId).get();
+        }catch (Exception e){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection == null){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection.getQuiz() == null){
+            throw new QuizNotFoundException();
+        }
+
+        int quizId = foundSection.getQuiz().getId();
 
         Set<GivenAnswer> givenAnswerList = new HashSet<>();
 
