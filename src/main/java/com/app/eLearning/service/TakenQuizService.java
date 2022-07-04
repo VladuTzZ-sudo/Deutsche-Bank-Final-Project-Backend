@@ -208,10 +208,11 @@ public class TakenQuizService {
         return new ResponseEntity<>(takenQuizResponseDTO, HttpStatus.OK);
     }
 
-    public ResponseEntity getStartDateTime(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity getStartDateTime(Integer userId, int sectionId) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
 
         Quiz foundQuiz = null;
         User foundUser = null;
+        Section foundSection = null;
 
         try {
             foundUser = userRepository.findById(userId).get();
@@ -220,10 +221,16 @@ public class TakenQuizService {
         }
 
         try {
-            foundQuiz = quizRepository.findById(quizId).get();
-        } catch (Exception e) {
+            foundSection = sectionRepository.findById(sectionId).get();
+        }catch (Exception e){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection.getQuiz() == null){
             throw new QuizNotFoundException();
         }
+
+        foundQuiz = foundSection.getQuiz();
 
         if (foundUser == null) {
             return new ResponseEntity<>("Utilizatorul nu poate fi identificat", HttpStatus.BAD_REQUEST);
