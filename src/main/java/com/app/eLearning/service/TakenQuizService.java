@@ -36,11 +36,28 @@ public class TakenQuizService {
     @Autowired
     SectionRepository sectionRepository;
 
-    public ResponseEntity<String> postTakenQuiz(Integer userId, List<GivenAnswersDTO> givenAnswersDTOList, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity<String> postTakenQuiz(Integer userId, List<GivenAnswersDTO> givenAnswersDTOList, int sectionId) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
 
         User foundUser = userRepository.findById(userId).get();
         Quiz foundQuiz = null;
         int correctAnswerCounter = 0;
+
+        Section foundSection = null;
+        try{
+            foundSection = sectionRepository.findById(sectionId).get();
+        }catch (Exception e){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection == null){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection.getQuiz() == null){
+            throw new QuizNotFoundException();
+        }
+
+        int quizId = foundSection.getQuiz().getId();
 
         Set<GivenAnswer> givenAnswerList = new HashSet<>();
 
@@ -98,11 +115,12 @@ public class TakenQuizService {
         return new ResponseEntity<>("Answers recorded successfully!", HttpStatus.OK);
     }
 
-    public ResponseEntity getTakenQuiz(Integer userId, int courseId, int sectionId, int quizId) throws CourseNotFoundException, SectionIdNotFound, QuizNotFoundException, WrongTokenException {
+    public ResponseEntity getTakenQuiz(Integer userId, int courseId, int sectionId) throws CourseNotFoundException, SectionIdNotFound, QuizNotFoundException, WrongTokenException {
         User foundUser = null;
         Course foundCourse = null;
         Section foundSection = null;
         Quiz foundQuiz = null;
+        int quizId = 0;
 
         try {
             foundCourse = courseRepository.findById(courseId).get();
@@ -115,6 +133,11 @@ public class TakenQuizService {
         } catch (Exception e) {
             throw new SectionIdNotFound();
         }
+
+        if (foundSection.getQuiz() == null){
+            throw new QuizNotFoundException();
+        }
+        quizId = foundSection.getQuiz().getId();
 
         try {
             foundQuiz = quizRepository.findById(quizId).get();
@@ -185,10 +208,11 @@ public class TakenQuizService {
         return new ResponseEntity<>(takenQuizResponseDTO, HttpStatus.OK);
     }
 
-    public ResponseEntity getStartDateTime(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity getStartDateTime(Integer userId, int sectionId) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
 
         Quiz foundQuiz = null;
         User foundUser = null;
+        Section foundSection = null;
 
         try {
             foundUser = userRepository.findById(userId).get();
@@ -197,10 +221,16 @@ public class TakenQuizService {
         }
 
         try {
-            foundQuiz = quizRepository.findById(quizId).get();
-        } catch (Exception e) {
+            foundSection = sectionRepository.findById(sectionId).get();
+        }catch (Exception e){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection.getQuiz() == null){
             throw new QuizNotFoundException();
         }
+
+        foundQuiz = foundSection.getQuiz();
 
         if (foundUser == null) {
             return new ResponseEntity<>("Utilizatorul nu poate fi identificat", HttpStatus.BAD_REQUEST);
@@ -226,9 +256,23 @@ public class TakenQuizService {
         return new ResponseEntity<>(takenQuiz.getStartDateTime().getTime(), HttpStatus.OK);
     }
 
-    public ResponseEntity getAnswersResponseDTO(Integer userId, int quizId) throws WrongTokenException, QuizNotFoundException {
+    public ResponseEntity getAnswersResponseDTO(Integer userId, int sectionId) throws WrongTokenException, QuizNotFoundException, SectionIdNotFound {
         Quiz foundQuiz = null;
         User foundUser = null;
+        Section foundSection = null;
+        int quizId;
+
+        try {
+            foundSection = sectionRepository.findById(sectionId).get();
+        }catch (Exception e){
+            throw new SectionIdNotFound();
+        }
+
+        if (foundSection == null){
+            throw new SectionIdNotFound();
+        }
+
+        quizId = foundSection.getQuiz().getId();
 
         try {
             foundUser = userRepository.findById(userId).get();
