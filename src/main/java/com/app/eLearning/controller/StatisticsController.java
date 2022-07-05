@@ -69,6 +69,26 @@ public class StatisticsController {
 
     }
 
+    @GetMapping("statistics/resources")
+    public ResponseEntity getResources(@RequestHeader("Authorization") String authHeader) throws WrongTokenException, CourseNotFoundException {
+
+        Pair<Integer, String> loginAuth = null;
+
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+        if (!loginAuth.getSecond().equals("teacher"))
+        {
+            return new ResponseEntity<>("You are not authorized to view statistics!", HttpStatus.UNAUTHORIZED);
+        }
+
+        return statisticsService.getResources();
+
+
+
+    }
+
+
+
 
 
 
