@@ -163,7 +163,7 @@ public class StatisticsService {
 //                }
 //            }
 
-            if (user.getUserRole().getRoleId() == 2) {
+            if (user.getUserRole().getRoleId() == 2 && user.getActive() != null) {
                 float totalPoints = 0;
                 for (TakenQuiz takenQuiz : user.getTakenQuizzes()) {
                     totalPoints += takenQuiz.getGrade();
