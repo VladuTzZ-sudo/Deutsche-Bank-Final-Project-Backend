@@ -58,4 +58,19 @@ public class StatisticsController {
 
     }
 
+    @GetMapping("/statistics/leaderboard")
+    public ResponseEntity getLeaderboard(@RequestHeader("Authorization") String authHeader) throws WrongTokenException {
+
+        Pair<Integer, String> loginAuth = null;
+
+        loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+        return statisticsService.getLeaderboard();
+
+    }
+
+
+
+
+
 }

@@ -3,6 +3,8 @@ package com.app.eLearning.service;
 import com.app.eLearning.dao.Course;
 import com.app.eLearning.dao.Section;
 import com.app.eLearning.dao.TakenQuiz;
+import com.app.eLearning.dao.User;
+import com.app.eLearning.dto.LeaderboardDTO;
 import com.app.eLearning.dto.PopularCourseDTO;
 import com.app.eLearning.dto.SectionAverageGradeDTO;
 import com.app.eLearning.exceptions.CourseNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -119,17 +122,62 @@ public class StatisticsService {
             }
 
             SectionAverageGradeDTO sectionAverageGradeDTO = new SectionAverageGradeDTO();
-            if (count != 0){
-                sectionAverageGradeDTO.setAverageGrade(sum/count);
+            if (count != 0) {
+                sectionAverageGradeDTO.setAverageGrade(sum / count);
             }
             sectionAverageGradeDTO.setSectionName(s.getTitle());
 
-        sectionAverageGradeDTOList.add(sectionAverageGradeDTO);
+            sectionAverageGradeDTOList.add(sectionAverageGradeDTO);
         }
 
 
         return new ResponseEntity(sectionAverageGradeDTOList, HttpStatus.OK);
 
 
+    }
+
+    public ResponseEntity getLeaderboard() {
+
+        List<User> userList = new ArrayList<>();
+        List<LeaderboardDTO> leaderboardDTOList = new ArrayList<>();
+
+        try {
+            userList = userRepository.findAll();
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not find users!", HttpStatus.NOT_FOUND);
+        }
+
+        if (userList.size() <= 0) {
+            return new ResponseEntity<>("Could not find users!", HttpStatus.NOT_FOUND);
+        }
+
+        for (User user : userList) {
+            float totalPoints = 0;
+            for (TakenQuiz takenQuiz : user.getTakenQuizzes()) {
+                totalPoints += takenQuiz.getGrade();
+            }
+            leaderboardDTOList.add(new LeaderboardDTO(user.getName() + " " + user.getSurname(), totalPoints));
+        }
+
+
+       Collections.sort(leaderboardDTOList, Collections.reverseOrder());
+
+        List<LeaderboardDTO> limitedInSizeList = new ArrayList<>();
+        if (leaderboardDTOList.size() < 10){
+            return new ResponseEntity<>(leaderboardDTOList, HttpStatus.OK);
+        }else {
+            int counter = 0;
+
+            for (LeaderboardDTO leaderboardDTO : leaderboardDTOList){
+                limitedInSizeList.add(leaderboardDTO);
+                if (counter == 10){
+                    break;
+                }else {
+                    counter ++;
+                }
+            }
+        }
+
+        return new ResponseEntity<>(limitedInSizeList, HttpStatus.OK);
     }
 }
