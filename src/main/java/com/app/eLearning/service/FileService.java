@@ -19,9 +19,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class FileService
@@ -29,14 +27,16 @@ public class FileService
 	@Autowired
 	FileRepository fileRepository;
 
-	private final Path rootPath = Paths.get("uploads");
+	private final Path teachersRootPath = Paths.get("uploads/teachers");
+	private final Path studentsRootPath = Paths.get("uploads/students");
 
 	@PostConstruct
 	public void init()
 	{
 		try
 		{
-			Files.createDirectories(rootPath);
+			Files.createDirectories(teachersRootPath);
+			Files.createDirectories(studentsRootPath);
 		}
 		catch (IOException e)
 		{
@@ -53,7 +53,11 @@ public class FileService
 
 		try
 		{
-			Files.copy(file.getInputStream(), rootPath.resolve(file.getOriginalFilename()));
+			if(courseId != 0 && sectionId != 0)
+				Files.copy(file.getInputStream(), teachersRootPath.resolve(file.getOriginalFilename()));
+			else
+				Files.copy(file.getInputStream(), studentsRootPath.resolve(file.getOriginalFilename()));
+
 
 			File fileDAO = new File();
 			fileDAO.setName(file.getOriginalFilename());
@@ -79,11 +83,19 @@ public class FileService
 		if(found == null)
 			throw new FileNotFoundException();
 
-		Path file = rootPath.resolve(fileName);
+		Path file = null;
+
+		if(courseId != 0 && sectionId != 0)
+			file = teachersRootPath.resolve(fileName);
+		else
+			file = studentsRootPath.resolve(fileName);
+
 		Resource resource = new UrlResource(file.toUri());
 		if (resource.exists() || resource.isReadable())
 		{
-			if(found.getCourseId() == courseId && found.getSectionId() == sectionId)
+			if(courseId == 0 && sectionId == 0)
+				return resource;
+			else if(courseId != 0 && sectionId != 0 && found.getCourseId() == courseId && found.getSectionId() == sectionId)
 				return resource;
 			return null;
 		}
@@ -93,21 +105,21 @@ public class FileService
 		}
 	}
 
-	public ResponseEntity getAllFiles()
-	{
-		List<String> fileNames = new ArrayList<>();
-		try
-		{
-			Files.walk(rootPath, 1)
-					.filter(path -> !path.equals(rootPath))
-					.forEach(path -> fileNames.add(path.getFileName().toString()));
-			return new ResponseEntity(fileNames, HttpStatus.OK);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-			return new ResponseEntity("Could not load the files!", HttpStatus.BAD_REQUEST);
-		}
-	}
+//	public ResponseEntity getAllFiles()
+//	{
+//		List<String> fileNames = new ArrayList<>();
+//		try
+//		{
+//			Files.walk(rootPath, 1)
+//					.filter(path -> !path.equals(rootPath))
+//					.forEach(path -> fileNames.add(path.getFileName().toString()));
+//			return new ResponseEntity(fileNames, HttpStatus.OK);
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//			return new ResponseEntity("Could not load the files!", HttpStatus.BAD_REQUEST);
+//		}
+//	}
 
 }
