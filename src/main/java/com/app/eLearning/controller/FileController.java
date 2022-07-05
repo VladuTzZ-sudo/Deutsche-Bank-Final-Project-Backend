@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Arrays;
 
 @Controller
 @CrossOrigin
@@ -91,7 +89,7 @@ public class FileController
 	}
 
 
-	@GetMapping("/files")
+	@GetMapping("/files/{fileName}")
 	public ResponseEntity getStudentFile(@RequestHeader("Authorization") String authHeader,
 	                                     @PathVariable(name = "fileName") String fileName) throws WrongTokenException, IOException, FileNotFoundException
 	{
