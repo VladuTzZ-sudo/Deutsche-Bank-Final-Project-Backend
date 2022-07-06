@@ -36,7 +36,7 @@ public class MailService {
     @Autowired
     JavaMailSender javaMailSender;
 
-    private HashMap<Integer, Set<Integer>> sentEmails= new HashMap<>();
+    private HashMap<Integer, Set<Integer>> sentEmails = new HashMap<>();
 
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() throws CourseNotFoundException {
@@ -79,35 +79,24 @@ public class MailService {
                         if (s.getQuiz().getDeadline().compareTo(currentDate) < 0) {
                             boolean existsTakenQuiz = false;
                             List<String> studentsGrades = new ArrayList<>();
-                            for (User student : studentList){
-                                for (TakenQuiz takenQuiz : student.getTakenQuizzes()){
+                            for (User student : studentList) {
+                                for (TakenQuiz takenQuiz : student.getTakenQuizzes()) {
 
-                                    if (takenQuiz.getQuiz().getId() == s.getQuiz().getId()){
+                                    if (takenQuiz.getQuiz().getId() == s.getQuiz().getId()) {
                                         studentsGrades.add(student.getName() + " " + student.getSurname() + " grade: " + takenQuiz.getGrade());
                                         existsTakenQuiz = true;
-
-                                        if (sentEmails.get(u.getId()) == null){
-                                            sentEmails.put(u.getId(), new HashSet<>());
-                                        }
-
-
-
-                                        Set<Integer> quizSet = sentEmails.get(u.getId());
-                                        quizSet.add(s.getQuiz().getId());
-                                        sentEmails.put(u.getId(), quizSet);
                                         break;
                                     }
                                 }
                             }
-                            if (existsTakenQuiz == true){
+                            if (existsTakenQuiz == true) {
                                 EmailResponseDTO emailResponseDTO = new EmailResponseDTO();
+                                emailResponseDTO.setQuizId(s.getQuiz().getId());
                                 emailResponseDTO.setQuizName(s.getQuiz().getQuizName());
                                 emailResponseDTO.setStudentsGrades(studentsGrades);
 
                                 emailResponseDTOList.add(emailResponseDTO);
                             }
-
-                            //verificarea 2=[1,2]
 
 
                             System.out.println("Quiz ended");
@@ -121,11 +110,39 @@ public class MailService {
 
             }
 
+            if (sentEmails.get(u.getId()) == null) {
+                sentEmails.put(u.getId(), new HashSet<>());
+            }
+
+            //verificarea 2=[1,2]
+            for (int localQuizId : sentEmails.get(u.getId())) {
+                for (int i = 0; i < emailResponseDTOList.size(); i++) {
+                    if (emailResponseDTOList.get(i) != null) {
+                        if (emailResponseDTOList.get(i).getQuizId() == localQuizId) {
+                            emailResponseDTOList.remove(i);
+                        }
+                    }
+
+                }
+            }
+
+            if (emailResponseDTOList.size() > 0) {
+                sendSimpleMessage("isarbogdan17@stud.ase.ro", "Quiz finished", emailResponseDTOList.toString());
+            }
+
+
             System.out.println(emailResponseDTOList);
-            System.out.println(sentEmails.toString());
+
+            Set<Integer> quizSet = sentEmails.get(u.getId());
+
+            for (EmailResponseDTO emailResponseDTO : emailResponseDTOList) {
+                quizSet.add(emailResponseDTO.getQuizId());
+            }
+            sentEmails.put(u.getId(), quizSet);
+
+//            System.out.println(emailResponseDTOList);
+//            System.out.println(sentEmails.toString());
         }
-
-
 
 
     }

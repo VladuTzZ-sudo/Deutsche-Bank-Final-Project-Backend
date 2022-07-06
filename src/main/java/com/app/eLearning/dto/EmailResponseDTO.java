@@ -10,14 +10,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailResponseDTO {
+    private int quizId;
     private String quizName;
     private List<String> studentsGrades;
 
     @Override
     public String toString() {
-        return "EmailResponseDTO{" +
-                "quizName='" + quizName + '\'' +
-                ", studentsGrades=" + studentsGrades +
-                '}';
+        return "Quiz is over. \n \n" + "Quiz Name: " + quizName  + "\n" + "Students and grades: \n" + studentsGrades.toString() + "\n";
     }
 }
