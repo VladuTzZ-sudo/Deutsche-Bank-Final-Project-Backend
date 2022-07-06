@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,9 +31,6 @@ public class FileController
 
 	@Autowired
 	UserService userService;
-
-	@Autowired
-	JavaMailSender javaMailSender;
 
 	@PostMapping("/courses/{courseId}/sections/{sectionId}/upload")
 	public ResponseEntity saveFile(@RequestHeader("Authorization") String authHeader,
@@ -129,19 +127,7 @@ public class FileController
 			return new ResponseEntity<>("The user id you provided is not valid!", HttpStatus.UNAUTHORIZED);
 		}
 
-		sendSimpleMessage("isarbogdan17@stud.ase.ro", "Test subject", "Test text");
-
 		return fileService.getAllFiles();
-	}
-
-	public void sendSimpleMessage(String to, String subject, String text)
-	{
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom("elearningdbapp@gmail.com");
-		message.setTo(to);
-		message.setSubject(subject);
-		message.setText(text);
-		javaMailSender.send(message);
 	}
 
 }
