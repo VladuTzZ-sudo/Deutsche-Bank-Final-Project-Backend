@@ -1,17 +1,9 @@
 package com.app.eLearning.service;
 
-import com.app.eLearning.dao.Course;
-import com.app.eLearning.dao.Section;
-import com.app.eLearning.dao.TakenQuiz;
-import com.app.eLearning.dao.User;
-import com.app.eLearning.dto.LeaderboardDTO;
-import com.app.eLearning.dto.PopularCourseDTO;
-import com.app.eLearning.dto.SectionAverageGradeDTO;
+import com.app.eLearning.dao.*;
+import com.app.eLearning.dto.*;
 import com.app.eLearning.exceptions.CourseNotFoundException;
-import com.app.eLearning.repository.CourseRepository;
-import com.app.eLearning.repository.SectionRepository;
-import com.app.eLearning.repository.TakenQuizRepository;
-import com.app.eLearning.repository.UserRepository;
+import com.app.eLearning.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +28,9 @@ public class StatisticsService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    UserRoleRepository userRoleRepository;
 
     public ResponseEntity getListofPopularCourseDTO() throws CourseNotFoundException {
 
@@ -141,6 +136,7 @@ public class StatisticsService {
         List<User> userList = new ArrayList<>();
         List<LeaderboardDTO> leaderboardDTOList = new ArrayList<>();
 
+
         try {
             userList = userRepository.findAll();
         } catch (Exception e) {
@@ -151,33 +147,132 @@ public class StatisticsService {
             return new ResponseEntity<>("Could not find users!", HttpStatus.NOT_FOUND);
         }
 
+        List<UserRole> userRoleList = new ArrayList<>();
+
+        try {
+            userRoleList = userRoleRepository.findAll();
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not find user_roles", HttpStatus.NOT_FOUND);
+        }
+
         for (User user : userList) {
-            float totalPoints = 0;
-            for (TakenQuiz takenQuiz : user.getTakenQuizzes()) {
-                totalPoints += takenQuiz.getGrade();
+            boolean isStudent = false;
+//            for (UserRole userRole : userRoleList){
+//                if (userRole.getId() == user.getUserRole().getId()){
+//                    if ()
+//                }
+//            }
+
+            if (user.getUserRole().getRoleId() == 2 && user.getActive() != null) {
+                float totalPoints = 0;
+                for (TakenQuiz takenQuiz : user.getTakenQuizzes()) {
+                    totalPoints += takenQuiz.getGrade();
+                }
+                leaderboardDTOList.add(new LeaderboardDTO(user.getName() + " " + user.getSurname(), totalPoints));
+
             }
-            leaderboardDTOList.add(new LeaderboardDTO(user.getName() + " " + user.getSurname(), totalPoints));
         }
 
 
-       Collections.sort(leaderboardDTOList, Collections.reverseOrder());
+        Collections.sort(leaderboardDTOList, Collections.reverseOrder());
 
         List<LeaderboardDTO> limitedInSizeList = new ArrayList<>();
-        if (leaderboardDTOList.size() < 10){
+        if (leaderboardDTOList.size() < 10) {
             return new ResponseEntity<>(leaderboardDTOList, HttpStatus.OK);
-        }else {
+        } else {
             int counter = 0;
 
-            for (LeaderboardDTO leaderboardDTO : leaderboardDTOList){
+            for (LeaderboardDTO leaderboardDTO : leaderboardDTOList) {
                 limitedInSizeList.add(leaderboardDTO);
-                if (counter == 10){
+                if (counter == 10) {
                     break;
-                }else {
-                    counter ++;
+                } else {
+                    counter++;
                 }
             }
         }
 
         return new ResponseEntity<>(limitedInSizeList, HttpStatus.OK);
+    }
+
+    public ResponseEntity getResources() throws CourseNotFoundException {
+
+        List<Course> foundCourseList = new ArrayList<>();
+        List<User> foundUserList = new ArrayList<>();
+
+        try {
+            foundCourseList = courseRepository.findAll();
+        } catch (Exception e) {
+            throw new CourseNotFoundException();
+        }
+
+        if (foundCourseList.size() <= 0) {
+            throw new CourseNotFoundException();
+        }
+
+        try {
+            foundUserList = userRepository.findAll();
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (foundCourseList.size() <= 0) {
+            return null;
+        }
+
+        List<RCourseDTO> resourceList = new ArrayList<>();
+
+        for (Course c : foundCourseList) {
+            RCourseDTO rCourseDTO = new RCourseDTO();
+
+            rCourseDTO.setName(c.getName());
+            rCourseDTO.setTeacherName(c.getTeacherName());
+            rCourseDTO.setDescription(c.getDescription());
+
+            List<RSectionDTO> rSectionDTOList = new ArrayList<>();
+
+            for (Section s : c.getCourseSections()) {
+                if (s.getQuiz() == null) {
+                    break;
+                }
+
+                RSectionDTO rSectionDTO = new RSectionDTO();
+
+                if (s.getQuiz() != null) {
+                    rSectionDTO.setDescription(s.getDescription());
+                    rSectionDTO.setQuizName(s.getQuiz().getQuizName());
+                    rSectionDTO.setQuizDescription(s.getQuiz().getDescription());
+                    rSectionDTO.setTitle(s.getTitle());
+
+                    List<RContentDTO> rContentDTOList = new ArrayList<>();
+                    for (User u : foundUserList) {
+                        RContentDTO rContentDTO = new RContentDTO();
+                        boolean userHasTakenQuiz = false;
+                        for (TakenQuiz q : u.getTakenQuizzes()) {
+                            if (q.getQuiz().getId() == s.getQuiz().getId()) {
+                                rContentDTO.setName(u.getName());
+                                rContentDTO.setSurname(u.getSurname());
+                                rContentDTO.setGrade(q.getGrade());
+                                userHasTakenQuiz = true;
+                                break;
+                            }
+                        }
+                        if (userHasTakenQuiz) {
+                            rContentDTOList.add(rContentDTO);
+                        }
+
+                    }
+                    rSectionDTO.setRContentDTOList(rContentDTOList);
+                }
+
+                rSectionDTOList.add(rSectionDTO);
+            }
+            rCourseDTO.setRSectionDTOList(rSectionDTOList);
+            resourceList.add(rCourseDTO);
+        }
+
+
+        return new ResponseEntity<>(resourceList, HttpStatus.OK);
+
     }
 }
