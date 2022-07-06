@@ -111,4 +111,20 @@ public class FileController
 				.body(file);
 	}
 
+	@GetMapping("/files")
+	public ResponseEntity getStudentFiles(@RequestHeader("Authorization") String authHeader) throws WrongTokenException, FileNotFoundException
+	{
+
+		Pair<Integer, String> loginAuth = null;
+
+		loginAuth = LoginAuthorization.validateAuthorization(authHeader);
+
+		if (!userService.checkIfUserExists(loginAuth.getFirst()))
+		{
+			return new ResponseEntity<>("The user id you provided is not valid!", HttpStatus.UNAUTHORIZED);
+		}
+
+		return fileService.getAllFiles();
+	}
+
 }

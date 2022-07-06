@@ -19,16 +19,17 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class FileService
 {
-	@Autowired
-	FileRepository fileRepository;
-
 	private final Path teachersRootPath = Paths.get("uploads/teachers");
 	private final Path studentsRootPath = Paths.get("uploads/students");
+	@Autowired
+	FileRepository fileRepository;
 
 	@PostConstruct
 	public void init()
@@ -48,12 +49,12 @@ public class FileService
 	{
 		File found = fileRepository.findFirstByName(file.getOriginalFilename());
 
-		if(found != null)
+		if (found != null)
 			throw new FileAlreadyExistsException();
 
 		try
 		{
-			if(courseId != 0 && sectionId != 0)
+			if (courseId != 0 && sectionId != 0)
 				Files.copy(file.getInputStream(), teachersRootPath.resolve(file.getOriginalFilename()));
 			else
 				Files.copy(file.getInputStream(), studentsRootPath.resolve(file.getOriginalFilename()));
@@ -80,12 +81,12 @@ public class FileService
 		File found = null;
 		found = fileRepository.findFirstByName(fileName);
 
-		if(found == null)
+		if (found == null)
 			throw new FileNotFoundException();
 
 		Path file = null;
 
-		if(courseId != 0 && sectionId != 0)
+		if (courseId != 0 && sectionId != 0)
 			file = teachersRootPath.resolve(fileName);
 		else
 			file = studentsRootPath.resolve(fileName);
@@ -93,9 +94,9 @@ public class FileService
 		Resource resource = new UrlResource(file.toUri());
 		if (resource.exists() || resource.isReadable())
 		{
-			if(courseId == 0 && sectionId == 0)
+			if (courseId == 0 && sectionId == 0)
 				return resource;
-			else if(courseId != 0 && sectionId != 0 && found.getCourseId() == courseId && found.getSectionId() == sectionId)
+			else if (courseId != 0 && sectionId != 0 && found.getCourseId() == courseId && found.getSectionId() == sectionId)
 				return resource;
 			return null;
 		}
@@ -105,21 +106,23 @@ public class FileService
 		}
 	}
 
-//	public ResponseEntity getAllFiles()
-//	{
-//		List<String> fileNames = new ArrayList<>();
-//		try
-//		{
-//			Files.walk(rootPath, 1)
-//					.filter(path -> !path.equals(rootPath))
-//					.forEach(path -> fileNames.add(path.getFileName().toString()));
-//			return new ResponseEntity(fileNames, HttpStatus.OK);
-//		}
-//		catch (IOException e)
-//		{
-//			e.printStackTrace();
-//			return new ResponseEntity("Could not load the files!", HttpStatus.BAD_REQUEST);
-//		}
-//	}
+	public ResponseEntity getAllFiles() throws FileNotFoundException
+	{
+		List<FileDTO> fileNames = new ArrayList<>();
+		List<File> files = fileRepository.findAll();
+
+		if(files == null){
+			throw new FileNotFoundException();
+		}
+
+		for (File file : files)
+		{
+			if (file.getCourseId() == 0 && file.getSectionId() == 0)
+			{
+				fileNames.add(new FileDTO(file.getName(), file.getDate()));
+			}
+		}
+		return new ResponseEntity(fileNames, HttpStatus.OK);
+	}
 
 }
