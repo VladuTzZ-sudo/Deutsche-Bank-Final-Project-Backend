@@ -127,9 +127,8 @@ public class MailService {
             }
 
             if (emailResponseDTOList.size() > 0) {
-                sendSimpleMessage("isarbogdan17@stud.ase.ro", "Quiz finished", emailResponseDTOList.toString());
+                sendSimpleMessage(u.getEmail(), "Quiz finished", emailResponseDTOList.toString());
             }
-
 
             System.out.println(emailResponseDTOList);
 
@@ -140,10 +139,7 @@ public class MailService {
             }
             sentEmails.put(u.getId(), quizSet);
 
-//            System.out.println(emailResponseDTOList);
-//            System.out.println(sentEmails.toString());
         }
-
 
     }
 
